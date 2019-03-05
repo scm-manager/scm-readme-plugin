@@ -9,17 +9,17 @@
     <version>2.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>scm-redme-plugin</artifactId>
+  <artifactId>scm-readme-plugin</artifactId>
   <version>2.0.0-SNAPSHOT</version>
-  <name>scm-redme-plugin</name>
+  <name>scm-readme-plugin</name>
   <packaging>smp</packaging>
-  <url>https://bitbucket.org/scm-manager/scm-redme-plugin</url>
+  <url>https://bitbucket.org/scm-manager/scm-readme-plugin</url>
   <description>SCM-Manager Review Plugin</description>
 
   <scm>
-    <connection>scm:hg:http://bitbucket.org/scm-manager/scm-redme-plugin</connection>
-    <developerConnection>scm:hg:https://bitbucket.org/scm-manager/scm-redme-plugin</developerConnection>
-    <url>http://bitbucket.org/scm-manager/scm-redme-plugin</url>
+    <connection>scm:hg:http://bitbucket.org/scm-manager/scm-readme-plugin</connection>
+    <developerConnection>scm:hg:https://bitbucket.org/scm-manager/scm-readme-plugin</developerConnection>
+    <url>http://bitbucket.org/scm-manager/scm-readme-plugin</url>
   </scm>
 
   <dependencies>

@@ -36,9 +36,8 @@ public class ReadmeManager {
       if (browserResult != null) {
         Optional<String> readmePath = browserResult.getFile().getChildren()
           .stream()
-          .map(FileObject::getPath)
-//          .map(String::toLowerCase)
-          .filter(path -> Arrays.asList("readme.md", "readme.txt", "readme", "readme.markdown").contains(path.toLowerCase()))
+          .map(FileObject::getName)
+          .filter(fileName -> Arrays.asList("readme.md", "readme.txt", "readme", "readme.markdown").contains(fileName.toLowerCase()))
           .findFirst();
         if (readmePath.isPresent()) {
           return repositoryService.getCatCommand().getContent(readmePath.get());

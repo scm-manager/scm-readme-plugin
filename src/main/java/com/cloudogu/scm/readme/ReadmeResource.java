@@ -9,7 +9,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 
 @Slf4j
 @Path(ReadmeResource.PATH)
@@ -32,7 +31,7 @@ public class ReadmeResource {
     @ResponseCode(code = 403, condition = "not authorized, the current user does not have the privilege"),
     @ResponseCode(code = 500, condition = "internal server error")
   })
-  public Response get(@PathParam("namespace") String namespace, @PathParam("name") String name) throws IOException {
+  public Response get(@PathParam("namespace") String namespace, @PathParam("name") String name) {
     String content;
     content = readmeManager.getReadmeContent(namespace, name);
     if (content != null) {

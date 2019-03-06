@@ -94,12 +94,12 @@
     <profile>
       <!-- If enabled, explicitly disables other profiles (i.e. link-ui). -->
       <id>ci</id>
-    </profile>
-    <profile>
-      <id>link-ui</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
+    </profile>
+    <profile>
+      <id>link-ui</id>
 
       <build>
         <plugins>

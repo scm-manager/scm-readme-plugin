@@ -80,7 +80,7 @@ public class ReadmeManagerTest {
     when(service.getRepository()).thenReturn(repository);
     BrowseCommandBuilder builder = mock(BrowseCommandBuilder.class, RETURNS_DEEP_STUBS);
     when(service.getBrowseCommand()).thenReturn(builder);
-    when(builder.setPath("/").setDisableCache(true)).thenReturn(builder);
+    when(builder.setPath("/").setDisableCache(false)).thenReturn(builder);
     FileObject file = new FileObject();
     file.setPath("/");
     file.setDirectory(true);

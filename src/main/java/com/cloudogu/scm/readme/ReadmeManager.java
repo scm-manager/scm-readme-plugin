@@ -45,7 +45,7 @@ public class ReadmeManager {
     Optional<String> readmePath = Optional.empty();
     BrowserResult browserResult = repositoryService.getBrowseCommand()
       .setPath("/")
-      .setDisableCache(true)
+      .setDisableCache(false)
       .getBrowserResult();
     if (browserResult != null) {
       readmePath = browserResult.getFile().getChildren()

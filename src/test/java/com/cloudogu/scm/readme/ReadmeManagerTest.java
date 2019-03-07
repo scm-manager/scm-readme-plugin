@@ -43,10 +43,11 @@ public class ReadmeManagerTest {
   @InjectMocks
   ReadmeManager readmeManager;
 
+  RepositoryService service = mock(RepositoryService.class);
+
   @Test
   @SubjectAware(username = "trillian", password = "secret")
   public void shouldReturnNullIfThereNoFiles() throws IOException {
-    RepositoryService service = mock(RepositoryService.class);
     when(serviceFactory.create(any(NamespaceAndName.class))).thenReturn(service);
     RepositoryPermission p = new RepositoryPermission("id", Collections.singleton("read"), false);
     Repository repository = new Repository("id", "git", "space", "name", "", "", p);
@@ -65,33 +66,14 @@ public class ReadmeManagerTest {
   @Test
   @SubjectAware(username = "trillian", password = "secret")
   public void shouldReturnNullIfThereIsNoReadmeFiles() throws IOException {
-    RepositoryService service = mock(RepositoryService.class);
-    when(serviceFactory.create(any(NamespaceAndName.class))).thenReturn(service);
-    RepositoryPermission p = new RepositoryPermission("id", Collections.singleton("read"), false);
-    Repository repository = new Repository("id", "git", "space", "name", "", "", p);
-    when(service.getRepository()).thenReturn(repository);
-    BrowseCommandBuilder builder = mock(BrowseCommandBuilder.class, RETURNS_DEEP_STUBS);
-    when(service.getBrowseCommand()).thenReturn(builder);
-    when(builder.setPath("/").setDisableCache(true)).thenReturn(builder);
-    FileObject file = new FileObject();
-    file.setPath("/");
-    file.setDirectory(true);
-    FileObject childFile1 = new FileObject();
-    childFile1.setName("README.haha");
-    List<FileObject> children = Lists.newArrayList(childFile1);
-    file.setChildren(children);
-    BrowserResult br = new BrowserResult("rev", file);
-    when(builder.getBrowserResult()).thenReturn(br);
+    createReadme("README.haha");
 
     Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
 
     assertThat(readmeContent.isPresent()).isFalse();
   }
 
-  @Test
-  @SubjectAware(username = "trillian", password = "secret")
-  public void shouldReturnReadmeContentIfThereIsAReadmeFile() throws IOException {
-    RepositoryService service = mock(RepositoryService.class);
+  private void createReadme(String name) throws IOException {
     when(serviceFactory.create(any(NamespaceAndName.class))).thenReturn(service);
     RepositoryPermission p = new RepositoryPermission("id", Collections.singleton("read"), false);
     Repository repository = new Repository("id", "git", "space", "name", "", "", p);
@@ -103,12 +85,18 @@ public class ReadmeManagerTest {
     file.setPath("/");
     file.setDirectory(true);
     FileObject childFile1 = new FileObject();
-    String readmeFile = "README";
-    childFile1.setName(readmeFile);
+    childFile1.setName(name);
     List<FileObject> children = Lists.newArrayList(childFile1);
     file.setChildren(children);
     BrowserResult br = new BrowserResult("rev", file);
     when(builder.getBrowserResult()).thenReturn(br);
+  }
+
+  @Test
+  @SubjectAware(username = "trillian", password = "secret")
+  public void shouldReturnReadmeContentIfThereIsAReadmeFile() throws IOException {
+    String readmeFile = "README";
+    createReadme(readmeFile);
     CatCommandBuilder catCommand = mock(CatCommandBuilder.class, RETURNS_DEEP_STUBS);
     when(service.getCatCommand()).thenReturn(catCommand);
     String content = "content of the readme file";
@@ -122,24 +110,8 @@ public class ReadmeManagerTest {
   @Test
   @SubjectAware(username = "trillian", password = "secret")
   public void shouldReturnReadmeContentIfThereIsAReadmeTxtFile() throws IOException {
-    RepositoryService service = mock(RepositoryService.class);
-    when(serviceFactory.create(any(NamespaceAndName.class))).thenReturn(service);
-    RepositoryPermission p = new RepositoryPermission("id", Collections.singleton("read"), false);
-    Repository repository = new Repository("id", "git", "space", "name", "", "", p);
-    when(service.getRepository()).thenReturn(repository);
-    BrowseCommandBuilder builder = mock(BrowseCommandBuilder.class, RETURNS_DEEP_STUBS);
-    when(service.getBrowseCommand()).thenReturn(builder);
-    when(builder.setPath("/").setDisableCache(true)).thenReturn(builder);
-    FileObject file = new FileObject();
-    file.setPath("/");
-    file.setDirectory(true);
-    FileObject childFile1 = new FileObject();
     String readmeFile = "readme.tXt";
-    childFile1.setName(readmeFile);
-    List<FileObject> children = Lists.newArrayList(childFile1);
-    file.setChildren(children);
-    BrowserResult br = new BrowserResult("rev", file);
-    when(builder.getBrowserResult()).thenReturn(br);
+    createReadme(readmeFile);
     CatCommandBuilder catCommand = mock(CatCommandBuilder.class, RETURNS_DEEP_STUBS);
     when(service.getCatCommand()).thenReturn(catCommand);
     String content = "content of the readme file";
@@ -153,24 +125,8 @@ public class ReadmeManagerTest {
   @Test
   @SubjectAware(username = "trillian", password = "secret")
   public void shouldReturnReadmeContentIfThereIsAReadmeMarkdownFile() throws IOException {
-    RepositoryService service = mock(RepositoryService.class);
-    when(serviceFactory.create(any(NamespaceAndName.class))).thenReturn(service);
-    RepositoryPermission p = new RepositoryPermission("id", Collections.singleton("read"), false);
-    Repository repository = new Repository("id", "git", "space", "name", "", "", p);
-    when(service.getRepository()).thenReturn(repository);
-    BrowseCommandBuilder builder = mock(BrowseCommandBuilder.class, RETURNS_DEEP_STUBS);
-    when(service.getBrowseCommand()).thenReturn(builder);
-    when(builder.setPath("/").setDisableCache(true)).thenReturn(builder);
-    FileObject file = new FileObject();
-    file.setPath("/");
-    file.setDirectory(true);
-    FileObject childFile1 = new FileObject();
     String readmeFile = "ReadMe.markdown";
-    childFile1.setName(readmeFile);
-    List<FileObject> children = Lists.newArrayList(childFile1);
-    file.setChildren(children);
-    BrowserResult br = new BrowserResult("rev", file);
-    when(builder.getBrowserResult()).thenReturn(br);
+    createReadme(readmeFile);
     CatCommandBuilder catCommand = mock(CatCommandBuilder.class, RETURNS_DEEP_STUBS);
     when(service.getCatCommand()).thenReturn(catCommand);
     String content = "content of the readme file";
@@ -184,24 +140,8 @@ public class ReadmeManagerTest {
   @Test
   @SubjectAware(username = "trillian", password = "secret")
   public void shouldReturnReadmeContentIfThereIsAReadmeMDFile() throws IOException {
-    RepositoryService service = mock(RepositoryService.class);
-    when(serviceFactory.create(any(NamespaceAndName.class))).thenReturn(service);
-    RepositoryPermission p = new RepositoryPermission("id", Collections.singleton("read"), false);
-    Repository repository = new Repository("id", "git", "space", "name", "", "", p);
-    when(service.getRepository()).thenReturn(repository);
-    BrowseCommandBuilder builder = mock(BrowseCommandBuilder.class, RETURNS_DEEP_STUBS);
-    when(service.getBrowseCommand()).thenReturn(builder);
-    when(builder.setPath("/").setDisableCache(true)).thenReturn(builder);
-    FileObject file = new FileObject();
-    file.setPath("/");
-    file.setDirectory(true);
-    FileObject childFile1 = new FileObject();
     String readmeFile = "ReadMe.md";
-    childFile1.setName(readmeFile);
-    List<FileObject> children = Lists.newArrayList(childFile1);
-    file.setChildren(children);
-    BrowserResult br = new BrowserResult("rev", file);
-    when(builder.getBrowserResult()).thenReturn(br);
+    createReadme(readmeFile);
     CatCommandBuilder catCommand = mock(CatCommandBuilder.class, RETURNS_DEEP_STUBS);
     when(service.getCatCommand()).thenReturn(catCommand);
     String content = "content of the readme file";

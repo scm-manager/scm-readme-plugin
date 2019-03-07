@@ -32,12 +32,8 @@ public class ReadmeResource {
     @ResponseCode(code = 500, condition = "internal server error")
   })
   public Response get(@PathParam("namespace") String namespace, @PathParam("name") String name) {
-    String content;
-    content = readmeManager.getReadmeContent(namespace, name);
-    if (content != null) {
-      return Response.ok(content).build();
-    } else {
-      return Response.status(Response.Status.NOT_FOUND).build();
-    }
+    return readmeManager.getReadmeContent(namespace, name)
+      .map(content -> Response.ok(content).build())
+      .orElse(Response.status(Response.Status.NOT_FOUND).build());
   }
 }

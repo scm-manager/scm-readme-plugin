@@ -15,10 +15,15 @@ import sonia.scm.api.v2.resources.HalAppender;
 import sonia.scm.api.v2.resources.HalEnricherContext;
 import sonia.scm.api.v2.resources.ScmPathInfoStore;
 import sonia.scm.repository.Repository;
+import sonia.scm.repository.api.RepositoryService;
+import sonia.scm.repository.api.RepositoryServiceFactory;
 
+import java.io.IOException;
 import java.net.URI;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -34,7 +39,8 @@ public class RepositoryLinkEnricherTest {
 
   @Mock
   ReadmeManager readmeManager;
-
+  @Mock
+  RepositoryServiceFactory serviceFactory;
   @Mock
   private HalAppender appender;
   private RepositoryLinkEnricher enricher;
@@ -47,17 +53,19 @@ public class RepositoryLinkEnricherTest {
   }
 
   @Before
-  public void setUp() {
+  public void setUp() throws IOException {
     ScmPathInfoStore scmPathInfoStore = new ScmPathInfoStore();
+    RepositoryService service = mock(RepositoryService.class);
+    when(serviceFactory.create(any(Repository.class))).thenReturn(service);
     scmPathInfoStore.set(() -> URI.create("https://scm-manager.org/scm/api/"));
     scmPathInfoStoreProvider = Providers.of(scmPathInfoStore);
-    when(readmeManager.getReadmeContent("space", "name")).thenReturn("content of README");
+    when(readmeManager.getReadmePath(any())).thenReturn(Optional.of("/README"));
   }
 
   @Test
   @SubjectAware(username = "dent", password = "secret")
   public void shouldEnrich() {
-    enricher = new RepositoryLinkEnricher(scmPathInfoStoreProvider,readmeManager);
+    enricher = new RepositoryLinkEnricher(scmPathInfoStoreProvider,readmeManager, serviceFactory);
     Repository repo = new Repository("id", "type", "space", "name");
     HalEnricherContext context = HalEnricherContext.of(repo);
     enricher.enrich(context, appender);
@@ -67,7 +75,7 @@ public class RepositoryLinkEnricherTest {
   @Test
   @SubjectAware(username = "noAccess", password = "secret")
   public void shouldNotEnrichBecauseOfMissingPermission() {
-    enricher = new RepositoryLinkEnricher(scmPathInfoStoreProvider,readmeManager);
+    enricher = new RepositoryLinkEnricher(scmPathInfoStoreProvider,readmeManager, serviceFactory);
     Repository repo = new Repository("id", "type", "space", "name");
     HalEnricherContext context = HalEnricherContext.of(repo);
     enricher.enrich(context, appender);
@@ -76,9 +84,9 @@ public class RepositoryLinkEnricherTest {
 
   @Test
   @SubjectAware(username = "dent", password = "secret")
-  public void shouldNotEnrichBecauseOfMissingReadmeFile() {
-    when(readmeManager.getReadmeContent("space", "name")).thenReturn(null);
-    enricher = new RepositoryLinkEnricher(scmPathInfoStoreProvider,readmeManager);
+  public void shouldNotEnrichBecauseOfMissingReadmeFile() throws IOException {
+    when(readmeManager.getReadmePath(any())).thenReturn(Optional.ofNullable(null));
+    enricher = new RepositoryLinkEnricher(scmPathInfoStoreProvider,readmeManager, serviceFactory);
     Repository repo = new Repository("id", "type", "space", "name");
     HalEnricherContext context = HalEnricherContext.of(repo);
     enricher.enrich(context, appender);

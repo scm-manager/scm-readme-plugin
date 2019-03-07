@@ -22,6 +22,7 @@ import sonia.scm.repository.api.RepositoryServiceFactory;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,9 +57,9 @@ public class ReadmeManagerTest {
     BrowserResult br = null;
     when(builder.getBrowserResult()).thenReturn(br);
 
-    String readmeContent = readmeManager.getReadmeContent("space", "name");
+    Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
 
-    assertThat(readmeContent).isNull();
+    assertThat(readmeContent.isPresent()).isFalse();
   }
 
   @Test
@@ -82,9 +83,9 @@ public class ReadmeManagerTest {
     BrowserResult br = new BrowserResult("rev", file);
     when(builder.getBrowserResult()).thenReturn(br);
 
-    String readmeContent = readmeManager.getReadmeContent("space", "name");
+    Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
 
-    assertThat(readmeContent).isNull();
+    assertThat(readmeContent.isPresent()).isFalse();
   }
 
   @Test
@@ -113,9 +114,9 @@ public class ReadmeManagerTest {
     String content = "content of the readme file";
     when(catCommand.getContent(readmeFile)).thenReturn(content);
 
-    String readmeContent = readmeManager.getReadmeContent("space", "name");
+    Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
 
-    assertThat(readmeContent).isEqualTo(content);
+    assertThat(readmeContent.get()).isEqualTo(content);
   }
 
   @Test
@@ -144,9 +145,9 @@ public class ReadmeManagerTest {
     String content = "content of the readme file";
     when(catCommand.getContent(readmeFile)).thenReturn(content);
 
-    String readmeContent = readmeManager.getReadmeContent("space", "name");
+    Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
 
-    assertThat(readmeContent).isEqualTo(content);
+    assertThat(readmeContent.get()).isEqualTo(content);
   }
 
   @Test
@@ -175,9 +176,9 @@ public class ReadmeManagerTest {
     String content = "content of the readme file";
     when(catCommand.getContent(readmeFile)).thenReturn(content);
 
-    String readmeContent = readmeManager.getReadmeContent("space", "name");
+    Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
 
-    assertThat(readmeContent).isEqualTo(content);
+    assertThat(readmeContent.get()).isEqualTo(content);
   }
 
   @Test
@@ -206,9 +207,9 @@ public class ReadmeManagerTest {
     String content = "content of the readme file";
     when(catCommand.getContent(readmeFile)).thenReturn(content);
 
-    String readmeContent = readmeManager.getReadmeContent("space", "name");
+    Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
 
-    assertThat(readmeContent).isEqualTo(content);
+    assertThat(readmeContent.get()).isEqualTo(content);
   }
 
 }

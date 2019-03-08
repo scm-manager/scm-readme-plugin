@@ -3,9 +3,11 @@ package com.cloudogu.scm.readme;
 import com.github.sdorra.shiro.ShiroRule;
 import com.github.sdorra.shiro.SubjectAware;
 import org.assertj.core.util.Lists;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -26,35 +28,40 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.RETURNS_SELF;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 @SubjectAware(configuration = "classpath:com/cloudogu/scm/readme/shiro.ini")
 public class ReadmeManagerTest {
 
+  public static final String CONTENT_OF_THE_README_FILE = "content of the readme file";
   @Rule
   public final ShiroRule shiroRule = new ShiroRule();
 
   @Mock
   RepositoryServiceFactory serviceFactory;
+  @Mock(answer = Answers.RETURNS_SELF)
+  BrowseCommandBuilder builder;
+  @Mock(answer = Answers.RETURNS_SELF)
+  CatCommandBuilder catCommand;
+  @Mock
+  RepositoryService service;
 
   @InjectMocks
   ReadmeManager readmeManager;
 
-  RepositoryService service = mock(RepositoryService.class);
+
+  @Before
+  public void initMocks() {
+    when(service.getBrowseCommand()).thenReturn(builder);
+    when(service.getCatCommand()).thenReturn(catCommand);
+  }
 
   @Test
   @SubjectAware(username = "trillian", password = "secret")
   public void shouldReturnNullIfThereNoFiles() throws IOException {
     when(serviceFactory.create(any(NamespaceAndName.class))).thenReturn(service);
-    RepositoryPermission p = new RepositoryPermission("id", Collections.singleton("read"), false);
-    Repository repository = new Repository("id", "git", "space", "name", "", "", p);
-    when(service.getRepository()).thenReturn(repository);
-    BrowseCommandBuilder builder = mock(BrowseCommandBuilder.class, RETURNS_SELF);
-    when(service.getBrowseCommand()).thenReturn(builder);
+    createRepository();
     BrowserResult br = null;
     when(builder.getBrowserResult()).thenReturn(br);
 
@@ -70,7 +77,7 @@ public class ReadmeManagerTest {
 
     Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
 
-    assertThat(readmeContent.isPresent()).isFalse();
+    assertThat(readmeContent).isNotPresent();
   }
 
   @Test
@@ -78,14 +85,10 @@ public class ReadmeManagerTest {
   public void shouldReturnReadmeContentIfThereIsAReadmeFile() throws IOException {
     String readmeFile = "README";
     createReadme(readmeFile);
-    CatCommandBuilder catCommand = mock(CatCommandBuilder.class, RETURNS_DEEP_STUBS);
-    when(service.getCatCommand()).thenReturn(catCommand);
-    String content = "content of the readme file";
-    when(catCommand.getContent(readmeFile)).thenReturn(content);
 
     Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
 
-    assertThat(readmeContent.get()).isEqualTo(content);
+    assertThat(readmeContent.get()).isEqualTo(CONTENT_OF_THE_README_FILE);
   }
 
   @Test
@@ -93,14 +96,10 @@ public class ReadmeManagerTest {
   public void shouldReturnReadmeContentIfThereIsAReadmeTxtFile() throws IOException {
     String readmeFile = "readme.tXt";
     createReadme(readmeFile);
-    CatCommandBuilder catCommand = mock(CatCommandBuilder.class, RETURNS_DEEP_STUBS);
-    when(service.getCatCommand()).thenReturn(catCommand);
-    String content = "content of the readme file";
-    when(catCommand.getContent(readmeFile)).thenReturn(content);
 
     Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
 
-    assertThat(readmeContent.get()).isEqualTo(content);
+    assertThat(readmeContent.get()).isEqualTo(CONTENT_OF_THE_README_FILE);
   }
 
   @Test
@@ -108,14 +107,10 @@ public class ReadmeManagerTest {
   public void shouldReturnReadmeContentIfThereIsAReadmeMarkdownFile() throws IOException {
     String readmeFile = "ReadMe.markdown";
     createReadme(readmeFile);
-    CatCommandBuilder catCommand = mock(CatCommandBuilder.class, RETURNS_DEEP_STUBS);
-    when(service.getCatCommand()).thenReturn(catCommand);
-    String content = "content of the readme file";
-    when(catCommand.getContent(readmeFile)).thenReturn(content);
 
     Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
 
-    assertThat(readmeContent.get()).isEqualTo(content);
+    assertThat(readmeContent.get()).isEqualTo(CONTENT_OF_THE_README_FILE);
   }
 
   @Test
@@ -123,23 +118,15 @@ public class ReadmeManagerTest {
   public void shouldReturnReadmeContentIfThereIsAReadmeMDFile() throws IOException {
     String readmeFile = "ReadMe.md";
     createReadme(readmeFile);
-    CatCommandBuilder catCommand = mock(CatCommandBuilder.class, RETURNS_DEEP_STUBS);
-    when(service.getCatCommand()).thenReturn(catCommand);
-    String content = "content of the readme file";
-    when(catCommand.getContent(readmeFile)).thenReturn(content);
 
     Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
 
-    assertThat(readmeContent.get()).isEqualTo(content);
+    assertThat(readmeContent.get()).isEqualTo(CONTENT_OF_THE_README_FILE);
   }
 
   private void createReadme(String name) throws IOException {
     when(serviceFactory.create(any(NamespaceAndName.class))).thenReturn(service);
-    RepositoryPermission p = new RepositoryPermission("id", Collections.singleton("read"), false);
-    Repository repository = new Repository("id", "git", "space", "name", "", "", p);
-    when(service.getRepository()).thenReturn(repository);
-    BrowseCommandBuilder builder = mock(BrowseCommandBuilder.class, RETURNS_SELF);
-    when(service.getBrowseCommand()).thenReturn(builder);
+    createRepository();
     FileObject file = new FileObject();
     file.setPath("/");
     file.setDirectory(true);
@@ -149,6 +136,12 @@ public class ReadmeManagerTest {
     file.setChildren(children);
     BrowserResult br = new BrowserResult("rev", file);
     when(builder.getBrowserResult()).thenReturn(br);
+    when(catCommand.getContent(name)).thenReturn(CONTENT_OF_THE_README_FILE);
   }
 
+  private void createRepository() {
+    RepositoryPermission p = new RepositoryPermission("id", Collections.singleton("read"), false);
+    Repository repository = new Repository("id", "git", "space", "name", "", "", p);
+    when(service.getRepository()).thenReturn(repository);
+  }
 }

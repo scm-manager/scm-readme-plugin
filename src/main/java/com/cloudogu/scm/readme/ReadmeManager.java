@@ -18,7 +18,7 @@ import java.util.Optional;
 @Slf4j
 public class ReadmeManager {
 
-  public static final List<String> README_FILES = Arrays.asList("readme.md", "readme.txt", "readme", "readme.markdown");
+  private static final List<String> README_FILES = Arrays.asList("readme.md", "readme.txt", "readme", "readme.markdown");
   private final RepositoryServiceFactory serviceFactory;
 
   @Inject
@@ -45,7 +45,6 @@ public class ReadmeManager {
     Optional<String> readmePath = Optional.empty();
     BrowserResult browserResult = repositoryService.getBrowseCommand()
       .setPath("/")
-      .setDisableCache(false)
       .getBrowserResult();
     if (browserResult != null) {
       readmePath = browserResult.getFile().getChildren()

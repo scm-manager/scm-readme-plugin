@@ -27,6 +27,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.RETURNS_SELF;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -52,9 +53,8 @@ public class ReadmeManagerTest {
     RepositoryPermission p = new RepositoryPermission("id", Collections.singleton("read"), false);
     Repository repository = new Repository("id", "git", "space", "name", "", "", p);
     when(service.getRepository()).thenReturn(repository);
-    BrowseCommandBuilder builder = mock(BrowseCommandBuilder.class, RETURNS_DEEP_STUBS);
+    BrowseCommandBuilder builder = mock(BrowseCommandBuilder.class, RETURNS_SELF);
     when(service.getBrowseCommand()).thenReturn(builder);
-    when(builder.setPath("/").setDisableCache(true)).thenReturn(builder);
     BrowserResult br = null;
     when(builder.getBrowserResult()).thenReturn(br);
 
@@ -71,25 +71,6 @@ public class ReadmeManagerTest {
     Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
 
     assertThat(readmeContent.isPresent()).isFalse();
-  }
-
-  private void createReadme(String name) throws IOException {
-    when(serviceFactory.create(any(NamespaceAndName.class))).thenReturn(service);
-    RepositoryPermission p = new RepositoryPermission("id", Collections.singleton("read"), false);
-    Repository repository = new Repository("id", "git", "space", "name", "", "", p);
-    when(service.getRepository()).thenReturn(repository);
-    BrowseCommandBuilder builder = mock(BrowseCommandBuilder.class, RETURNS_DEEP_STUBS);
-    when(service.getBrowseCommand()).thenReturn(builder);
-    when(builder.setPath("/").setDisableCache(false)).thenReturn(builder);
-    FileObject file = new FileObject();
-    file.setPath("/");
-    file.setDirectory(true);
-    FileObject childFile1 = new FileObject();
-    childFile1.setName(name);
-    List<FileObject> children = Lists.newArrayList(childFile1);
-    file.setChildren(children);
-    BrowserResult br = new BrowserResult("rev", file);
-    when(builder.getBrowserResult()).thenReturn(br);
   }
 
   @Test
@@ -150,6 +131,24 @@ public class ReadmeManagerTest {
     Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
 
     assertThat(readmeContent.get()).isEqualTo(content);
+  }
+
+  private void createReadme(String name) throws IOException {
+    when(serviceFactory.create(any(NamespaceAndName.class))).thenReturn(service);
+    RepositoryPermission p = new RepositoryPermission("id", Collections.singleton("read"), false);
+    Repository repository = new Repository("id", "git", "space", "name", "", "", p);
+    when(service.getRepository()).thenReturn(repository);
+    BrowseCommandBuilder builder = mock(BrowseCommandBuilder.class, RETURNS_SELF);
+    when(service.getBrowseCommand()).thenReturn(builder);
+    FileObject file = new FileObject();
+    file.setPath("/");
+    file.setDirectory(true);
+    FileObject childFile1 = new FileObject();
+    childFile1.setName(name);
+    List<FileObject> children = Lists.newArrayList(childFile1);
+    file.setChildren(children);
+    BrowserResult br = new BrowserResult("rev", file);
+    when(builder.getBrowserResult()).thenReturn(br);
   }
 
 }

@@ -15,7 +15,6 @@ import sonia.scm.repository.api.RepositoryServiceFactory;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.io.IOException;
 
 @Extension
 @Enrich(Repository.class)
@@ -43,8 +42,6 @@ public class RepositoryLinkEnricher implements HalEnricher {
         LinkBuilder linkBuilder = new LinkBuilder(scmPathInfoStoreProvider.get().get(), ReadmeResource.class);
         appender.appendLink("readme", linkBuilder.method("get").parameters(repository.getNamespace(), repository.getName()).href());
       }
-    } catch (IOException e) {
-      log.error("error on getting repo service");
     }
   }
 }

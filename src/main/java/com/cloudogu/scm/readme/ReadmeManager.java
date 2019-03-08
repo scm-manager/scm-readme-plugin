@@ -15,6 +15,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
+import static java.util.Optional.ofNullable;
+
 @Slf4j
 public class ReadmeManager {
 
@@ -27,33 +31,41 @@ public class ReadmeManager {
   }
 
   Optional<String> getReadmeContent(String namespace, String name) {
-    String content = null;
     try (RepositoryService repositoryService = serviceFactory.create(new NamespaceAndName(namespace, name))) {
       Repository repository = repositoryService.getRepository();
       RepositoryPermissions.read(repository).check();
-      Optional<String> readmePath = getReadmePath(repositoryService);
-      if (readmePath.isPresent()) {
-       content = repositoryService.getCatCommand().getContent(readmePath.get());
-      }
-    } catch (IOException e) {
-      log.error("There is an error while getting the content of the readme file", e);
+      return getReadmePath(repositoryService)
+        .flatMap(rp -> readFile(repositoryService, rp));
     }
-    return Optional.ofNullable(content);
   }
 
-  public Optional<String> getReadmePath(RepositoryService repositoryService) throws IOException {
-    Optional<String> readmePath = Optional.empty();
-    BrowserResult browserResult = repositoryService.getBrowseCommand()
-      .setPath("/")
-      .getBrowserResult();
-    if (browserResult != null) {
-      readmePath = browserResult.getFile().getChildren()
+  private Optional<String> readFile(RepositoryService repositoryService, String readmePath) {
+    try {
+      return of(repositoryService.getCatCommand().getContent(readmePath));
+    } catch (IOException e) {
+      log.error("There is an error while getting the content of the readme file", e);
+      return empty();
+    }
+  }
+
+  Optional<String> getReadmePath(RepositoryService repositoryService) {
+    return browse(repositoryService)
+      .map(BrowserResult::getFile)
+      .flatMap(fo -> fo.getChildren()
         .stream()
         .map(FileObject::getName)
         .filter(fileName -> README_FILES.contains(fileName.toLowerCase()))
-        .findFirst();
-    }
-    return readmePath;
+        .findFirst());
   }
 
+  private Optional<BrowserResult> browse(RepositoryService repositoryService) {
+    try {
+      return ofNullable(repositoryService.getBrowseCommand()
+        .setPath("/")
+        .getBrowserResult());
+    } catch (IOException e) {
+      log.error("error on getting browsing repository {}", repositoryService.getRepository().getNamespaceAndName(), e);
+      return empty();
+    }
+  }
 }

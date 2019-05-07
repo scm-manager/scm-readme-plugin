@@ -30,7 +30,6 @@ class ReadmeComponent extends React.Component<Props, State> {
 
   componentDidMount() {
     const { repository } = this.props;
-    console.log("readme", repository);
     if (repository._links.readme) {
       getReadme(repository._links.readme.href)
         .then(readmeContent => {
@@ -49,7 +48,7 @@ class ReadmeComponent extends React.Component<Props, State> {
   }
   render() {
     const { readmeContent } = this.state;
-    return <MarkdownView content={readmeContent} />;
+    return <MarkdownView content={readmeContent} enableAnchorHeadings={true} />;
   }
 }
 

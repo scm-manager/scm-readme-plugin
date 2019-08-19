@@ -35,10 +35,12 @@
 
 <plugin>
 
+  <scm-version>2</scm-version>
+
   <information>
-    <scm-version>2</scm-version>
-    <author>Sebastian Sdorra</author>
-    <url>https://bitbucket.org/scm-manager/scm-readme-plugin</url>
+    <displayName>Readme</displayName>
+    <author>Cloudogu GmbH</author>
+    <category>Information</category>
   </information>
 
 </plugin>

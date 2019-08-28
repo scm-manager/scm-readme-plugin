@@ -13,6 +13,7 @@
   <version>2.0.0-SNAPSHOT</version>
   <name>scm-readme-plugin</name>
   <description>Shows the Readme Content of a repository</description>
+  <url>https://github.com/scm-manager/scm-readme-plugin</url>
 
   <repositories>
 

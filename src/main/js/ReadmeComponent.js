@@ -1,5 +1,4 @@
 //@flow
-
 import React from "react";
 import { translate } from "react-i18next";
 import type { Repository } from "@scm-manager/ui-types";

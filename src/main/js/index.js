@@ -1,9 +1,9 @@
 // @flow
 import React from "react";
-import { binder } from "@scm-manager/ui-extensions";
-import ReadmeNavLink from "./ReadmeNavLink";
-import type { Repository } from "@scm-manager/ui-types";
 import { Route } from "react-router-dom";
+import { binder } from "@scm-manager/ui-extensions";
+import type { Repository } from "@scm-manager/ui-types";
+import ReadmeNavLink from "./ReadmeNavLink";
 import ReadmeComponent from "./ReadmeComponent";
 
 const predicate = (props: Object) => {
@@ -27,10 +27,6 @@ type Props = {
 };
 
 class ReadmeRoute extends React.Component<Props> {
-  constructor(props: Props) {
-    super(props);
-  }
-
   renderReadme = () => {
     const { repository } = this.props;
     if (repository) {

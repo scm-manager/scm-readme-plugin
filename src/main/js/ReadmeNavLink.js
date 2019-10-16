@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
-import { NavLink } from "@scm-manager/ui-components";
 import { translate } from "react-i18next";
+import { NavLink } from "@scm-manager/ui-components";
 
 type Props = {
   url: string,

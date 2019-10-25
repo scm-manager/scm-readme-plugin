@@ -1,12 +1,11 @@
-// @flow
-import React from "react";
+import React, {FC} from "react";
 import { Route } from "react-router-dom";
 import { binder } from "@scm-manager/ui-extensions";
-import type { Repository } from "@scm-manager/ui-types";
+import { Repository } from "@scm-manager/ui-types";
 import ReadmeNavLink from "./ReadmeNavLink";
 import ReadmeComponent from "./ReadmeComponent";
 
-const predicate = (props: Object) => {
+const predicate = (props: any) => {
   return props.repository && props.repository._links.readme;
 };
 
@@ -15,15 +14,15 @@ function matches(route: any) {
   return route.location.pathname.match(regex);
 }
 
-const ReadmeNavigationLink = ({ url }) => {
+const ReadmeNavigationLink: FC<{url: string}> = ({ url }) => {
   return <ReadmeNavLink url={url} activeWhenMatch={matches} />;
 };
 
 binder.bind("repository.navigation.topLevel", ReadmeNavigationLink, predicate);
 
 type Props = {
-  url: string,
-  repository: Repository
+  url: string;
+  repository: Repository;
 };
 
 class ReadmeRoute extends React.Component<Props> {

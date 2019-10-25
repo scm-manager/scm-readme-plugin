@@ -1,4 +1,3 @@
-// @flow
 import { apiClient } from "@scm-manager/ui-components";
 
 export function getReadme(link: string) {

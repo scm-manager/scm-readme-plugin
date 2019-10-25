@@ -1,21 +1,17 @@
-//@flow
 import React from "react";
-import { translate } from "react-i18next";
-import type { Repository } from "@scm-manager/ui-types";
+import { WithTranslation, withTranslation } from "react-i18next";
+import { Repository, Link } from "@scm-manager/ui-types";
 import { MarkdownView } from "@scm-manager/ui-components";
 import { getReadme } from "./api";
 
-type Props = {
-  repository: Repository,
-
-  // context props
-  t: string => string
+type Props = WithTranslation & {
+  repository: Repository;
 };
 
 type State = {
-  readmeContent: string,
-  loading?: boolean,
-  error?: Error
+  readmeContent: string;
+  loading?: boolean;
+  error?: Error;
 };
 
 class ReadmeComponent extends React.Component<Props, State> {
@@ -30,7 +26,8 @@ class ReadmeComponent extends React.Component<Props, State> {
   componentDidMount() {
     const { repository } = this.props;
     if (repository._links.readme) {
-      getReadme(repository._links.readme.href)
+      const link = repository._links.readme as Link;
+      getReadme(link.href)
         .then(readmeContent => {
           this.setState({
             loading: false,
@@ -51,4 +48,4 @@ class ReadmeComponent extends React.Component<Props, State> {
   }
 }
 
-export default translate("plugin")(ReadmeComponent);
+export default withTranslation("plugin")(ReadmeComponent);

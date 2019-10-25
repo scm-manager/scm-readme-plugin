@@ -1,12 +1,10 @@
-// @flow
 import React from "react";
-import { translate } from "react-i18next";
+import { WithTranslation, withTranslation } from "react-i18next";
 import { NavLink } from "@scm-manager/ui-components";
 
-type Props = {
-  url: string,
-  activeWhenMatch: (route: any) => boolean,
-  t: string => string
+type Props = WithTranslation & {
+  url: string;
+  activeWhenMatch: (route: any) => boolean;
 };
 
 class ReadmeNavLink extends React.Component<Props> {
@@ -24,4 +22,4 @@ class ReadmeNavLink extends React.Component<Props> {
   }
 }
 
-export default translate("plugins")(ReadmeNavLink);
+export default withTranslation("plugins")(ReadmeNavLink);

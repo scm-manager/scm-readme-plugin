@@ -6,8 +6,7 @@
   "main": "./src/main/js/index.tsx",
   "scripts": {
     "build": "ui-scripts plugin",
-    "watch": "ui-scripts plugin-watch",
-    "typecheck": "tsc"
+    "watch": "ui-scripts plugin-watch"
   },
   "dependencies": {
     "@scm-manager/ui-plugins": "latest"

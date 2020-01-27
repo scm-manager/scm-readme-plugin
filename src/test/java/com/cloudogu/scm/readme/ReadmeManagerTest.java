@@ -8,11 +8,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import sonia.scm.cache.Cache;
-import sonia.scm.cache.CacheManager;
 import sonia.scm.cache.MapCacheManager;
 import sonia.scm.repository.BrowserResult;
 import sonia.scm.repository.FileObject;
@@ -35,22 +32,28 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings("squid:S2068") // this hard coded passwords are ok
 @RunWith(MockitoJUnitRunner.Silent.class)
 @SubjectAware(configuration = "classpath:com/cloudogu/scm/readme/shiro.ini")
 public class ReadmeManagerTest {
 
-  public static final String CONTENT_OF_THE_README_FILE = "content of the readme file";
+  private static final String CONTENT_OF_THE_README_FILE = "content of the readme file";
+  private static final String NAMESPACE = "space";
+  private static final String NAME = "name";
+  private static final String README_TXT = "README.txt";
+  private static final String README_MD = "README.md";
+
   @Rule
   public final ShiroRule shiroRule = new ShiroRule();
 
   @Mock
-  RepositoryServiceFactory serviceFactory;
+  private RepositoryServiceFactory serviceFactory;
   @Mock(answer = Answers.RETURNS_SELF)
-  BrowseCommandBuilder builder;
+  private BrowseCommandBuilder builder;
   @Mock(answer = Answers.RETURNS_SELF)
-  CatCommandBuilder catCommand;
+  private CatCommandBuilder catCommand;
   @Mock
-  RepositoryService service;
+  private RepositoryService service;
 
   private ReadmeManager readmeManager;
 
@@ -73,7 +76,7 @@ public class ReadmeManagerTest {
     BrowserResult br = null;
     when(builder.getBrowserResult()).thenReturn(br);
 
-    Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
+    Optional<String> readmeContent = readmeManager.getReadmeContent(NAMESPACE, NAME);
 
     assertThat(readmeContent.isPresent()).isFalse();
   }
@@ -83,7 +86,7 @@ public class ReadmeManagerTest {
   public void shouldReturnNullIfThereIsNoReadmeFiles() throws IOException {
     createReadme("README.haha");
 
-    Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
+    Optional<String> readmeContent = readmeManager.getReadmeContent(NAMESPACE, NAME);
 
     assertThat(readmeContent).isNotPresent();
   }
@@ -94,9 +97,8 @@ public class ReadmeManagerTest {
     String readmeFile = "README";
     createReadme(readmeFile);
 
-    Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
-
-    assertThat(readmeContent.get()).isEqualTo(CONTENT_OF_THE_README_FILE);
+    Optional<String> readmeContent = readmeManager.getReadmeContent(NAMESPACE, NAME);
+    assertThat(readmeContent).contains(CONTENT_OF_THE_README_FILE);
   }
 
   @Test
@@ -105,9 +107,8 @@ public class ReadmeManagerTest {
     String readmeFile = "readme.tXt";
     createReadme(readmeFile);
 
-    Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
-
-    assertThat(readmeContent.get()).isEqualTo(CONTENT_OF_THE_README_FILE);
+    Optional<String> readmeContent = readmeManager.getReadmeContent(NAMESPACE, NAME);
+    assertThat(readmeContent).contains(CONTENT_OF_THE_README_FILE);
   }
 
   @Test
@@ -116,9 +117,8 @@ public class ReadmeManagerTest {
     String readmeFile = "ReadMe.markdown";
     createReadme(readmeFile);
 
-    Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
-
-    assertThat(readmeContent.get()).isEqualTo(CONTENT_OF_THE_README_FILE);
+    Optional<String> readmeContent = readmeManager.getReadmeContent(NAMESPACE, NAME);
+    assertThat(readmeContent).contains(CONTENT_OF_THE_README_FILE);
   }
 
   @Test
@@ -127,38 +127,37 @@ public class ReadmeManagerTest {
     String readmeFile = "ReadMe.md";
     createReadme(readmeFile);
 
-    Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
-
-    assertThat(readmeContent.get()).isEqualTo(CONTENT_OF_THE_README_FILE);
+    Optional<String> readmeContent = readmeManager.getReadmeContent(NAMESPACE, NAME);
+    assertThat(readmeContent).contains(CONTENT_OF_THE_README_FILE);
   }
 
   @Test
   @SubjectAware(username = "trillian", password = "secret")
   public void shouldReturnReadmePathFromCache() throws IOException {
-    createReadme("README.txt");
+    createReadme(README_TXT);
 
     Optional<String> readmePath = readmeManager.getReadmePath(service);
-    assertThat(readmePath).contains("README.txt");
+    assertThat(readmePath).contains(README_TXT);
 
-    createReadme("README.md");
+    createReadme(README_MD);
 
     readmePath = readmeManager.getReadmePath(service);
-    assertThat(readmePath).contains("README.txt");
+    assertThat(readmePath).contains(README_TXT);
   }
 
   @Test
   @SubjectAware(username = "trillian", password = "secret")
   public void shouldReturnReadmePathAfterCacheClear() throws IOException {
-    createReadme("README.txt");
+    createReadme(README_TXT);
 
     Optional<String> readmePath = readmeManager.getReadmePath(service);
-    assertThat(readmePath).contains("README.txt");
+    assertThat(readmePath).contains(README_TXT);
 
     readmeManager.clearCache(createHookEvent(service.getRepository()));
-    createReadme("README.md");
+    createReadme(README_MD);
 
     readmePath = readmeManager.getReadmePath(service);
-    assertThat(readmePath).contains("README.md");
+    assertThat(readmePath).contains(README_MD);
   }
 
   private PostReceiveRepositoryHookEvent createHookEvent(Repository repository) {
@@ -184,7 +183,7 @@ public class ReadmeManagerTest {
 
   private void createRepository() {
     RepositoryPermission p = new RepositoryPermission("id", Collections.singleton("read"), false);
-    Repository repository = new Repository("id", "git", "space", "name", "", "", p);
+    Repository repository = new Repository("id", "git", NAMESPACE, NAME, "", "", p);
     when(service.getRepository()).thenReturn(repository);
   }
 }

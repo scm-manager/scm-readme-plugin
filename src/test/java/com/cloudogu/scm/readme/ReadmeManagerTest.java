@@ -11,9 +11,13 @@ import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import sonia.scm.cache.Cache;
+import sonia.scm.cache.CacheManager;
+import sonia.scm.cache.MapCacheManager;
 import sonia.scm.repository.BrowserResult;
 import sonia.scm.repository.FileObject;
 import sonia.scm.repository.NamespaceAndName;
+import sonia.scm.repository.PostReceiveRepositoryHookEvent;
 import sonia.scm.repository.Repository;
 import sonia.scm.repository.RepositoryPermission;
 import sonia.scm.repository.api.BrowseCommandBuilder;
@@ -28,6 +32,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
@@ -47,14 +52,17 @@ public class ReadmeManagerTest {
   @Mock
   RepositoryService service;
 
-  @InjectMocks
-  ReadmeManager readmeManager;
-
+  private ReadmeManager readmeManager;
 
   @Before
-  public void initMocks() {
+  public void setUpMocks() {
     when(service.getBrowseCommand()).thenReturn(builder);
     when(service.getCatCommand()).thenReturn(catCommand);
+  }
+
+  @Before
+  public void setUpObjectUnderTest() {
+    readmeManager = new ReadmeManager(serviceFactory, new MapCacheManager());
   }
 
   @Test
@@ -122,6 +130,41 @@ public class ReadmeManagerTest {
     Optional<String> readmeContent = readmeManager.getReadmeContent("space", "name");
 
     assertThat(readmeContent.get()).isEqualTo(CONTENT_OF_THE_README_FILE);
+  }
+
+  @Test
+  @SubjectAware(username = "trillian", password = "secret")
+  public void shouldReturnReadmePathFromCache() throws IOException {
+    createReadme("README.txt");
+
+    Optional<String> readmePath = readmeManager.getReadmePath(service);
+    assertThat(readmePath).contains("README.txt");
+
+    createReadme("README.md");
+
+    readmePath = readmeManager.getReadmePath(service);
+    assertThat(readmePath).contains("README.txt");
+  }
+
+  @Test
+  @SubjectAware(username = "trillian", password = "secret")
+  public void shouldReturnReadmePathAfterCacheClear() throws IOException {
+    createReadme("README.txt");
+
+    Optional<String> readmePath = readmeManager.getReadmePath(service);
+    assertThat(readmePath).contains("README.txt");
+
+    readmeManager.clearCache(createHookEvent(service.getRepository()));
+    createReadme("README.md");
+
+    readmePath = readmeManager.getReadmePath(service);
+    assertThat(readmePath).contains("README.md");
+  }
+
+  private PostReceiveRepositoryHookEvent createHookEvent(Repository repository) {
+    PostReceiveRepositoryHookEvent event = mock(PostReceiveRepositoryHookEvent.class);
+    when(event.getRepository()).thenReturn(repository);
+    return event;
   }
 
   private void createReadme(String name) throws IOException {

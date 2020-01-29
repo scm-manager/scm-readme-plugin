@@ -1,7 +1,5 @@
 package com.cloudogu.scm.readme;
 
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.mock.MockDispatcherFactory;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import sonia.scm.web.RestDispatcher;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
@@ -28,15 +27,15 @@ public class ReadmeResourceTest {
   @Mock
   ReadmeManager readmeManager;
 
-  private Dispatcher dispatcher;
+  private RestDispatcher dispatcher;
   private final MockHttpResponse response = new MockHttpResponse();
 
 
   @BeforeEach
   public void init() {
     resource = new ReadmeResource(readmeManager);
-    dispatcher = MockDispatcherFactory.createDispatcher();
-    dispatcher.getRegistry().addSingletonResource(resource);
+    dispatcher = new RestDispatcher();
+    dispatcher.addSingletonResource(resource);
   }
 
   @Test

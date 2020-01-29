@@ -5,12 +5,12 @@
   <parent>
     <artifactId>scm-plugins</artifactId>
     <groupId>sonia.scm.plugins</groupId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.0.0-rc2</version>
   </parent>
 
   <artifactId>scm-readme-plugin</artifactId>
   <packaging>smp</packaging>
-  <version>2.0.0-SNAPSHOT</version>
+  <version>2.0.0-rc2</version>
   <name>scm-readme-plugin</name>
   <description>Shows the Readme Content of a repository</description>
   <url>https://github.com/scm-manager/scm-readme-plugin</url>

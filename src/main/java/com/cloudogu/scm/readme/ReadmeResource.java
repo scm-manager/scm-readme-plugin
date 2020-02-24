@@ -1,15 +1,24 @@
 package com.cloudogu.scm.readme;
 
 import com.google.inject.Inject;
-import com.webcohesion.enunciate.metadata.rs.ResponseCode;
-import com.webcohesion.enunciate.metadata.rs.StatusCodes;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import sonia.scm.api.v2.resources.ErrorDto;
+import sonia.scm.web.VndMediaType;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
+@OpenAPIDefinition(tags = {
+  @Tag(name = "Readme Plugin", description = "Readme plugin provided endpoints")
+})
 @Slf4j
 @Path(ReadmeResource.PATH)
 public class ReadmeResource {
@@ -25,12 +34,18 @@ public class ReadmeResource {
 
   @GET
   @Path("/{namespace}/{name}")
-  @StatusCodes({
-    @ResponseCode(code = 200, condition = "success"),
-    @ResponseCode(code = 401, condition = "not authenticated / invalid credentials"),
-    @ResponseCode(code = 403, condition = "not authorized, the current user does not have the privilege"),
-    @ResponseCode(code = 500, condition = "internal server error")
-  })
+  @Operation(summary = "Get readme", description = "Returns the README.md.", tags = "Readme Plugin")
+  @ApiResponse(responseCode = "200", description = "success")
+  @ApiResponse(responseCode = "401", description = "not authenticated / invalid credentials")
+  @ApiResponse(responseCode = "403", description = "not authorized /  the current user does not have the right privilege")
+  @ApiResponse(
+    responseCode = "500",
+    description = "internal server error",
+    content = @Content(
+      mediaType = VndMediaType.ERROR_TYPE,
+      schema = @Schema(implementation = ErrorDto.class)
+    )
+  )
   public Response get(@PathParam("namespace") String namespace, @PathParam("name") String name) {
     return readmeManager.getReadmeContent(namespace, name)
       .map(content -> Response.ok(content).build())

@@ -18,7 +18,7 @@ class ReadmeNavLink extends React.Component<Props> {
         icon="fas fa-book-reader"
         label={t("scm-readme-plugin.navLink")}
         activeWhenMatch={activeWhenMatch}
-        title={("scm-readme-plugin.navLink")}
+        title={t("scm-readme-plugin.navLink")}
         collapsed={collapsed}
       />
     );

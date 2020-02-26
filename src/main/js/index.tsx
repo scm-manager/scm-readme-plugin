@@ -1,4 +1,4 @@
-import React, {FC} from "react";
+import React, { FC } from "react";
 import { Route } from "react-router-dom";
 import { binder } from "@scm-manager/ui-extensions";
 import { Repository } from "@scm-manager/ui-types";
@@ -14,8 +14,11 @@ function matches(route: any) {
   return route.location.pathname.match(regex);
 }
 
-const ReadmeNavigationLink: FC<{url: string}> = ({ url }) => {
-  return <ReadmeNavLink url={url} activeWhenMatch={matches} />;
+const ReadmeNavigationLink: FC<{ url: string; collapsedRepositoryMenu: boolean }> = ({
+  url,
+  collapsedRepositoryMenu
+}) => {
+  return <ReadmeNavLink url={url} activeWhenMatch={matches} collapsed={collapsedRepositoryMenu} />;
 };
 
 binder.bind("repository.navigation.topLevel", ReadmeNavigationLink, predicate);

@@ -5,11 +5,12 @@ import { NavLink } from "@scm-manager/ui-components";
 type Props = WithTranslation & {
   url: string;
   activeWhenMatch: (route: any) => boolean;
+  collapsed?: boolean;
 };
 
 class ReadmeNavLink extends React.Component<Props> {
   render() {
-    const { url, activeWhenMatch, t } = this.props;
+    const { url, activeWhenMatch, collapsed, t } = this.props;
 
     return (
       <NavLink
@@ -17,6 +18,7 @@ class ReadmeNavLink extends React.Component<Props> {
         icon="fas fa-book-reader"
         label={t("scm-readme-plugin.navLink")}
         activeWhenMatch={activeWhenMatch}
+        collapsed={collapsed}
       />
     );
   }

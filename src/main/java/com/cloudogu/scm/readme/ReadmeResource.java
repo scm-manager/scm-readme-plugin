@@ -34,7 +34,7 @@ public class ReadmeResource {
 
   @GET
   @Path("/{namespace}/{name}")
-  @Operation(summary = "Get readme", description = "Returns the README.md.", tags = "Readme Plugin")
+  @Operation(summary = "Get readme", description = "Returns the README.md.", tags = "Readme Plugin", operationId = "readme_get_readme")
   @ApiResponse(responseCode = "200", description = "success")
   @ApiResponse(responseCode = "401", description = "not authenticated / invalid credentials")
   @ApiResponse(responseCode = "403", description = "not authorized /  the current user does not have the right privilege")

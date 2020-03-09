@@ -14,11 +14,8 @@ function matches(route: any) {
   return route.location.pathname.match(regex);
 }
 
-const ReadmeNavigationLink: FC<{ url: string; collapsedRepositoryMenu: boolean }> = ({
-  url,
-  collapsedRepositoryMenu
-}) => {
-  return <ReadmeNavLink url={url} activeWhenMatch={matches} collapsed={collapsedRepositoryMenu} />;
+const ReadmeNavigationLink: FC<{ url: string }> = ({ url }) => {
+  return <ReadmeNavLink url={url} activeWhenMatch={matches} />;
 };
 
 binder.bind("repository.navigation.topLevel", ReadmeNavigationLink, predicate);

@@ -1,6 +1,6 @@
 import React from "react";
 import { WithTranslation, withTranslation } from "react-i18next";
-import { NavLink } from "@scm-manager/ui-components";
+import { NavLink, MenuContext } from "@scm-manager/ui-components";
 
 type Props = WithTranslation & {
   url: string;
@@ -10,17 +10,21 @@ type Props = WithTranslation & {
 
 class ReadmeNavLink extends React.Component<Props> {
   render() {
-    const { url, activeWhenMatch, collapsed, t } = this.props;
+    const { url, activeWhenMatch, t } = this.props;
 
     return (
-      <NavLink
-        to={`${url}/readme`}
-        icon="fas fa-book-reader"
-        label={t("scm-readme-plugin.navLink")}
-        activeWhenMatch={activeWhenMatch}
-        title={t("scm-readme-plugin.navLink")}
-        collapsed={collapsed}
-      />
+      <MenuContext.Consumer>
+        {({ menuCollapsed }) => (
+          <NavLink
+            to={`${url}/readme`}
+            icon="fas fa-book-reader"
+            label={t("scm-readme-plugin.navLink")}
+            activeWhenMatch={activeWhenMatch}
+            title={t("scm-readme-plugin.navLink")}
+            collapsed={menuCollapsed}
+          />
+        )}
+      </MenuContext.Consumer>
     );
   }
 }

@@ -38,31 +38,4 @@
     </repository>
 
   </repositories>
-
-  <profiles>
-    <profile>
-      <!-- If enabled, explicitly disables other profiles (i.e. link-ui). -->
-      <id>ci</id>
-    </profile>
-    <profile>
-      <id>link-ui</id>
-
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <build>
-        <plugins>
-
-          <plugin>
-            <groupId>sonia.scm.maven</groupId>
-            <artifactId>smp-maven-plugin</artifactId>
-            <version>1.0.0-alpha-4</version>
-            <extensions>true</extensions>
-          </plugin>
-
-        </plugins>
-      </build>
-
-    </profile>
-  </profiles>
 </project>

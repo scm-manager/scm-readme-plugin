@@ -23,6 +23,8 @@
  */
 package com.cloudogu.scm.readme;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,8 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import sonia.scm.web.RestDispatcher;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
@@ -44,11 +45,14 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class ReadmeResourceTest {
 
-  public static final Optional<String> CONTENT = Optional.of("content");
+  public static final String CONTENT = "content";
+  public static final Optional<Readme> README = Optional.of(new Readme("master", CONTENT));
   private ReadmeResource resource;
 
   @Mock
   ReadmeManager readmeManager;
+
+  private final ObjectMapper mapper = new ObjectMapper();
 
   private RestDispatcher dispatcher;
   private final MockHttpResponse response = new MockHttpResponse();
@@ -62,24 +66,23 @@ public class ReadmeResourceTest {
   }
 
   @Test
-  public void shouldGetReadmeContent() throws URISyntaxException, UnsupportedEncodingException {
-    when(readmeManager.getReadmeContent("space", "repo")).thenReturn(CONTENT);
-    MockHttpRequest request = MockHttpRequest
-      .get("/" + ReadmeResource.PATH + "/space/repo")
-      .accept(MediaType.APPLICATION_JSON);
+  public void shouldGetReadme() throws URISyntaxException, IOException {
+    when(readmeManager.getReadme("space", "repo")).thenReturn(README);
+    MockHttpRequest request = MockHttpRequest.get("/" + ReadmeResource.PATH + "/space/repo");
 
     dispatcher.invoke(request, response);
 
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
-    assertThat(response.getContentAsString()).isEqualTo(CONTENT.get());
+    JsonNode jsonNode = mapper.readTree(response.getOutput());
+    assertThat(jsonNode.get("revision").asText()).isEqualTo("master");
+    assertThat(jsonNode.get(CONTENT).asText()).isEqualTo(CONTENT);
+    assertThat(jsonNode.get("_links").get("self").get("href").asText()).isEqualTo("/v2/plugins/readme/space/repo");
   }
 
   @Test
   public void shouldGetNotFound() throws URISyntaxException {
-    when(readmeManager.getReadmeContent("space", "repo")).thenReturn(Optional.ofNullable(null));
-    MockHttpRequest request = MockHttpRequest
-      .get("/" + ReadmeResource.PATH + "/space/repo")
-      .accept(MediaType.APPLICATION_JSON);
+    when(readmeManager.getReadme("space", "repo")).thenReturn(Optional.empty());
+    MockHttpRequest request = MockHttpRequest.get("/" + ReadmeResource.PATH + "/space/repo");
 
     dispatcher.invoke(request, response);
 

@@ -21,13 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { apiClient } from "@scm-manager/ui-components";
+package com.cloudogu.scm.readme;
 
-export type Readme = {
-  revision: string;
-  content: string;
-};
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-export function getReadme(link: string): Promise<Readme> {
-  return apiClient.get(link).then(resp => resp.json());
+@Getter
+@AllArgsConstructor
+public class Readme {
+  private final String branch;
+  private final String content;
 }

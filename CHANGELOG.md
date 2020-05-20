@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Fixed
+- Fixed usage of relative links in readme ([#5](https://github.com/scm-manager/scm-readme-plugin/pull/5))
+
 ### Changed
 - Changeover to MIT license ([#4](https://github.com/scm-manager/scm-readme-plugin/pull/4))
 

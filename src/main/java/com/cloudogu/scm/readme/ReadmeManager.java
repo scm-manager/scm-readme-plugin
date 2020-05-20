@@ -55,6 +55,7 @@ public class ReadmeManager {
   private static final List<String> README_FILES = Arrays.asList("readme.md", "readme.txt", "readme", "readme.markdown");
 
   private final RepositoryServiceFactory serviceFactory;
+  private final RevisionResolver revisionResolver;
   private final Cache<String, CachedResult> cache;
 
   @EqualsAndHashCode
@@ -66,8 +67,9 @@ public class ReadmeManager {
   }
 
   @Inject
-  public ReadmeManager(RepositoryServiceFactory serviceFactory, CacheManager cacheManager) {
+  public ReadmeManager(RepositoryServiceFactory serviceFactory, RevisionResolver revisionResolver, CacheManager cacheManager) {
     this.serviceFactory = serviceFactory;
+    this.revisionResolver = revisionResolver;
     this.cache = cacheManager.getCache(CACHE_NAME);
   }
 
@@ -78,12 +80,13 @@ public class ReadmeManager {
     cache.remove(repositoryId);
   }
 
-  Optional<String> getReadmeContent(String namespace, String name) {
+  Optional<Readme> getReadme(String namespace, String name) {
     try (RepositoryService repositoryService = serviceFactory.create(new NamespaceAndName(namespace, name))) {
       Repository repository = repositoryService.getRepository();
       RepositoryPermissions.read(repository).check();
       return getReadmePath(repositoryService)
-        .flatMap(rp -> readFile(repositoryService, rp));
+        .flatMap(rp -> readFile(repositoryService, rp))
+        .flatMap(content -> revisionResolver.resolve(repositoryService).map(branch -> new Readme(branch, content)));
     }
   }
 

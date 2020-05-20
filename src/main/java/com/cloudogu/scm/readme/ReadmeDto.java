@@ -21,13 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { apiClient } from "@scm-manager/ui-components";
+package com.cloudogu.scm.readme;
 
-export type Readme = {
-  revision: string;
-  content: string;
-};
+import de.otto.edison.hal.HalRepresentation;
+import de.otto.edison.hal.Links;
+import lombok.Getter;
 
-export function getReadme(link: string): Promise<Readme> {
-  return apiClient.get(link).then(resp => resp.json());
+@Getter
+@SuppressWarnings("java:S2160")
+public class ReadmeDto extends HalRepresentation {
+
+  private final String revision;
+  private final String content;
+
+  public ReadmeDto(Readme readme, String self) {
+    super(Links.linkingTo().self(self).build());
+    this.revision = readme.getBranch();
+    this.content = readme.getContent();
+  }
 }

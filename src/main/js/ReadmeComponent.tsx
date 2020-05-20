@@ -24,15 +24,15 @@
 import React from "react";
 import { WithTranslation, withTranslation } from "react-i18next";
 import { Repository, Link } from "@scm-manager/ui-types";
-import { MarkdownView } from "@scm-manager/ui-components";
-import { getReadme } from "./api";
+import { MarkdownView, Loading, ErrorNotification } from "@scm-manager/ui-components";
+import { getReadme, Readme } from "./api";
 
 type Props = WithTranslation & {
   repository: Repository;
 };
 
 type State = {
-  readmeContent: string;
+  readme?: Readme;
   loading?: boolean;
   error?: Error;
 };
@@ -41,8 +41,7 @@ class ReadmeComponent extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      loading: true,
-      readmeContent: ""
+      loading: true
     };
   }
 
@@ -51,10 +50,10 @@ class ReadmeComponent extends React.Component<Props, State> {
     if (repository._links.readme) {
       const link = repository._links.readme as Link;
       getReadme(link.href)
-        .then(readmeContent => {
+        .then(readme => {
           this.setState({
             loading: false,
-            readmeContent
+            readme
           });
         })
         .catch(error => {
@@ -65,9 +64,24 @@ class ReadmeComponent extends React.Component<Props, State> {
         });
     }
   }
+
   render() {
-    const { readmeContent } = this.state;
-    return <MarkdownView content={readmeContent} enableAnchorHeadings={true} />;
+    const { repository } = this.props;
+    const { loading, error, readme } = this.state;
+    if (error) {
+      return <ErrorNotification error={error} />;
+    }
+    if (loading || !readme) {
+      return <Loading />;
+    }
+
+    return (
+      <MarkdownView
+        content={readme.content}
+        enableAnchorHeadings={true}
+        basePath={`/repo/${repository.namespace}/${repository.name}/code/sources/${readme.revision}`}
+      />
+    );
   }
 }
 

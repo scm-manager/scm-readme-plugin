@@ -52,8 +52,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings("squid:S2068") // this hard coded passwords are ok
 @RunWith(MockitoJUnitRunner.Silent.class)
@@ -76,6 +75,8 @@ public class ReadmeManagerTest {
   @Mock(answer = Answers.RETURNS_SELF)
   private CatCommandBuilder catCommand;
   @Mock
+  private RevisionResolver revisionResolver;
+  @Mock
   private RepositoryService service;
 
   private ReadmeManager readmeManager;
@@ -88,7 +89,8 @@ public class ReadmeManagerTest {
 
   @Before
   public void setUpObjectUnderTest() {
-    readmeManager = new ReadmeManager(serviceFactory, new MapCacheManager());
+    readmeManager = new ReadmeManager(serviceFactory, revisionResolver, new MapCacheManager());
+    lenient().when(revisionResolver.resolve(service)).thenReturn(Optional.of("develop"));
   }
 
   @Test
@@ -99,9 +101,9 @@ public class ReadmeManagerTest {
     BrowserResult br = null;
     when(builder.getBrowserResult()).thenReturn(br);
 
-    Optional<String> readmeContent = readmeManager.getReadmeContent(NAMESPACE, NAME);
+    Optional<Readme> readme = readmeManager.getReadme(NAMESPACE, NAME);
 
-    assertThat(readmeContent.isPresent()).isFalse();
+    assertThat(readme.isPresent()).isFalse();
   }
 
   @Test
@@ -109,9 +111,9 @@ public class ReadmeManagerTest {
   public void shouldReturnNullIfThereIsNoReadmeFiles() throws IOException {
     createReadme("README.haha");
 
-    Optional<String> readmeContent = readmeManager.getReadmeContent(NAMESPACE, NAME);
+    Optional<Readme> readme = readmeManager.getReadme(NAMESPACE, NAME);
 
-    assertThat(readmeContent).isNotPresent();
+    assertThat(readme).isNotPresent();
   }
 
   @Test
@@ -120,8 +122,8 @@ public class ReadmeManagerTest {
     String readmeFile = "README";
     createReadme(readmeFile);
 
-    Optional<String> readmeContent = readmeManager.getReadmeContent(NAMESPACE, NAME);
-    assertThat(readmeContent).contains(CONTENT_OF_THE_README_FILE);
+    Optional<Readme> readme = readmeManager.getReadme(NAMESPACE, NAME);
+    assertThat(readme.get().getContent()).contains(CONTENT_OF_THE_README_FILE);
   }
 
   @Test
@@ -130,8 +132,8 @@ public class ReadmeManagerTest {
     String readmeFile = "readme.tXt";
     createReadme(readmeFile);
 
-    Optional<String> readmeContent = readmeManager.getReadmeContent(NAMESPACE, NAME);
-    assertThat(readmeContent).contains(CONTENT_OF_THE_README_FILE);
+    Optional<Readme> readme = readmeManager.getReadme(NAMESPACE, NAME);
+    assertThat(readme.get().getContent()).contains(CONTENT_OF_THE_README_FILE);
   }
 
   @Test
@@ -140,8 +142,8 @@ public class ReadmeManagerTest {
     String readmeFile = "ReadMe.markdown";
     createReadme(readmeFile);
 
-    Optional<String> readmeContent = readmeManager.getReadmeContent(NAMESPACE, NAME);
-    assertThat(readmeContent).contains(CONTENT_OF_THE_README_FILE);
+    Optional<Readme> readme = readmeManager.getReadme(NAMESPACE, NAME);
+    assertThat(readme.get().getContent()).contains(CONTENT_OF_THE_README_FILE);
   }
 
   @Test
@@ -150,8 +152,20 @@ public class ReadmeManagerTest {
     String readmeFile = "ReadMe.md";
     createReadme(readmeFile);
 
-    Optional<String> readmeContent = readmeManager.getReadmeContent(NAMESPACE, NAME);
-    assertThat(readmeContent).contains(CONTENT_OF_THE_README_FILE);
+    Optional<Readme> readme = readmeManager.getReadme(NAMESPACE, NAME);
+    assertThat(readme.get().getContent()).contains(CONTENT_OF_THE_README_FILE);
+  }
+
+  @Test
+  @SubjectAware(username = "trillian", password = "secret")
+  public void shouldReturnEmptyObjectWithoutRevision() throws IOException {
+    String readmeFile = "ReadMe.md";
+    createReadme(readmeFile);
+
+    lenient().when(revisionResolver.resolve(service)).thenReturn(Optional.empty());
+
+    Optional<Readme> readme = readmeManager.getReadme(NAMESPACE, NAME);
+    assertThat(readme).isEmpty();
   }
 
   @Test

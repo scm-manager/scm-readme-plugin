@@ -37,7 +37,11 @@ import sonia.scm.web.VndMediaType;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.net.URI;
 
 @OpenAPIDefinition(tags = {
   @Tag(name = "Readme Plugin", description = "Readme plugin provided endpoints")
@@ -45,6 +49,8 @@ import javax.ws.rs.core.Response;
 @Slf4j
 @Path(ReadmeResource.PATH)
 public class ReadmeResource {
+
+  static final String MEDIA_TYPE = VndMediaType.PREFIX + "readme" + VndMediaType.SUFFIX;
 
   public static final String PATH = "v2/plugins/readme";
 
@@ -57,10 +63,19 @@ public class ReadmeResource {
 
   @GET
   @Path("/{namespace}/{name}")
+  @Produces(MEDIA_TYPE)
   @Operation(summary = "Get readme", description = "Returns the README.md.", tags = "Readme Plugin", operationId = "readme_get_readme")
-  @ApiResponse(responseCode = "200", description = "success")
+  @ApiResponse(
+    responseCode = "200",
+    description = "success",
+    content = @Content(
+      mediaType = MEDIA_TYPE,
+      schema = @Schema(implementation = ReadmeDto.class)
+    )
+  )
   @ApiResponse(responseCode = "401", description = "not authenticated / invalid credentials")
   @ApiResponse(responseCode = "403", description = "not authorized /  the current user does not have the right privilege")
+  @ApiResponse(responseCode = "404", description = "repository does not have a readme")
   @ApiResponse(
     responseCode = "500",
     description = "internal server error",
@@ -69,9 +84,11 @@ public class ReadmeResource {
       schema = @Schema(implementation = ErrorDto.class)
     )
   )
-  public Response get(@PathParam("namespace") String namespace, @PathParam("name") String name) {
-    return readmeManager.getReadmeContent(namespace, name)
-      .map(content -> Response.ok(content).build())
+  public Response get(@Context UriInfo uriInfo, @PathParam("namespace") String namespace, @PathParam("name") String name) {
+    URI uri = uriInfo.getAbsolutePath();
+    return readmeManager.getReadme(namespace, name)
+      .map(readme -> new ReadmeDto(readme, uri.toASCIIString()))
+      .map(dto -> Response.ok(dto).build())
       .orElse(Response.status(Response.Status.NOT_FOUND).build());
   }
 }

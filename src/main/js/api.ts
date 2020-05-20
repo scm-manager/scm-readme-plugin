@@ -23,6 +23,11 @@
  */
 import { apiClient } from "@scm-manager/ui-components";
 
-export function getReadme(link: string) {
-  return apiClient.get(link).then(resp => resp.text());
+export type Readme = {
+  revision: string;
+  content: string;
+};
+
+export function getReadme(link: string): Promise<Readme> {
+  return apiClient.get(link).then(resp => resp.json());
 }

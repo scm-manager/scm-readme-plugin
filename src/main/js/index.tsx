@@ -33,7 +33,7 @@ const predicate = (props: any) => {
 };
 
 function matches(route: any) {
-  const regex = new RegExp(".*(/readme)");
+  const regex = new RegExp(".*(/readme)$");
   return route.location.pathname.match(regex);
 }
 

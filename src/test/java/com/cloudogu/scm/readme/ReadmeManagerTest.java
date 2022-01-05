@@ -158,6 +158,17 @@ public class ReadmeManagerTest {
 
   @Test
   @SubjectAware(username = "trillian", password = "secret")
+  public void shouldIgnoreDirectory() throws IOException {
+    String readmeDirectory = "readme";
+    FileObject directory = createReadme(readmeDirectory);
+    directory.setDirectory(true);
+
+    Optional<Readme> readme = readmeManager.getReadme(NAMESPACE, NAME);
+    assertThat(readme).isNotPresent();
+  }
+
+  @Test
+  @SubjectAware(username = "trillian", password = "secret")
   public void shouldReturnEmptyObjectWithoutRevision() throws IOException {
     String readmeFile = "ReadMe.md";
     createReadme(readmeFile);
@@ -203,19 +214,20 @@ public class ReadmeManagerTest {
     return event;
   }
 
-  private void createReadme(String name) throws IOException {
+  private FileObject createReadme(String name) throws IOException {
     when(serviceFactory.create(any(NamespaceAndName.class))).thenReturn(service);
     createRepository();
     FileObject file = new FileObject();
     file.setPath("/");
     file.setDirectory(true);
-    FileObject childFile1 = new FileObject();
-    childFile1.setName(name);
-    List<FileObject> children = Lists.newArrayList(childFile1);
+    FileObject childFile = new FileObject();
+    childFile.setName(name);
+    List<FileObject> children = Lists.newArrayList(childFile);
     file.setChildren(children);
     BrowserResult br = new BrowserResult("rev", file);
     when(builder.getBrowserResult()).thenReturn(br);
     when(catCommand.getContent(name)).thenReturn(CONTENT_OF_THE_README_FILE);
+    return childFile;
   }
 
   private void createRepository() {

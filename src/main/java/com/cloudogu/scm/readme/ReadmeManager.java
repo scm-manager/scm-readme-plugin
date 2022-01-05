@@ -119,6 +119,7 @@ public class ReadmeManager {
       .map(BrowserResult::getFile)
       .flatMap(fo -> fo.getChildren()
         .stream()
+        .filter(fileObject -> !fileObject.isDirectory())
         .map(FileObject::getName)
         .filter(fileName -> README_FILES.contains(fileName.toLowerCase()))
         .findFirst());

@@ -1,2 +1,0 @@
-- type: fixed
-  description: Catch errors for repository link enricher to prevent breaking the repository overview ([#42](https://github.com/scm-manager/scm-readme-plugin/pull/42))

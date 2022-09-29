@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2.0.3 - 2022-09-29
+### Fixed
+- Catch errors for repository link enricher to prevent breaking the repository overview ([#42](https://github.com/scm-manager/scm-readme-plugin/pull/42))
+
 ## 2.0.2 - 2022-01-05
 ### Fixed
 - Skip directories matching readme filename pattern ([#29](https://github.com/scm-manager/scm-readme-plugin/pull/29))

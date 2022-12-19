@@ -23,16 +23,14 @@
  */
 
 plugins {
-  id 'org.scm-manager.smp' version '0.12.0'
+  id 'org.scm-manager.smp' version '0.13.0'
 }
 
 dependencies {
-  testImplementation "org.junit.vintage:junit-vintage-engine:5.7.0"
-  testImplementation 'junit:junit:4.13.1'
 }
 
 scmPlugin {
-  scmVersion = "2.0.0" // TODO: remove junit dependencies above when updating to a newer core version
+  scmVersion = "2.40.2-SNAPSHOT"
   displayName = "Readme"
   description = "Shows the Readme content of a repository"
   author = "Cloudogu GmbH"

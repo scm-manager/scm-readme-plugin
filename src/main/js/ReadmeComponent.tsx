@@ -26,6 +26,7 @@ import { WithTranslation, withTranslation } from "react-i18next";
 import { Repository, Link } from "@scm-manager/ui-types";
 import { MarkdownView, Loading, ErrorNotification } from "@scm-manager/ui-components";
 import { getReadme, Readme } from "./api";
+import { RepositoryRevisionContextProvider } from "@scm-manager/ui-api";
 
 type Props = WithTranslation & {
   repository: Repository;
@@ -76,11 +77,13 @@ class ReadmeComponent extends React.Component<Props, State> {
     }
 
     return (
-      <MarkdownView
-        content={readme.content}
-        enableAnchorHeadings={true}
-        basePath={`/repo/${repository.namespace}/${repository.name}/code/sources/${readme.revision}`}
-      />
+      <RepositoryRevisionContextProvider revision={readme.revision}>
+        <MarkdownView
+          content={readme.content}
+          enableAnchorHeadings={true}
+          basePath={`/repo/${repository.namespace}/${repository.name}/code/sources/${readme.revision}`}
+        />
+      </RepositoryRevisionContextProvider>
     );
   }
 }

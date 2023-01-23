@@ -23,14 +23,14 @@
  */
 
 plugins {
-  id 'org.scm-manager.smp' version '0.13.0'
+  id 'org.scm-manager.smp' version '0.15.0'
 }
 
 dependencies {
 }
 
 scmPlugin {
-  scmVersion = "2.40.2-SNAPSHOT"
+  scmVersion = "2.41.0"
   displayName = "Readme"
   description = "Shows the Readme content of a repository"
   author = "Cloudogu GmbH"

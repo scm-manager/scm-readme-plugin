@@ -64,4 +64,3 @@ class ReadmeRoute extends React.Component<Props> {
 }
 
 binder.bind("repository.route", ReadmeRoute);
-binder.bind("repository.redirect", () => "/readme", predicate);

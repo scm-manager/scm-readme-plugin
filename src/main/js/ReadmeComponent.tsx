@@ -65,10 +65,10 @@ class ReadmeComponent extends React.Component<Props, State> {
         });
     }
   }
-
   render() {
     const { repository } = this.props;
     const { loading, error, readme } = this.state;
+    const link = repository._links.readme as Link;
     if (error) {
       return <ErrorNotification error={error} />;
     }
@@ -81,6 +81,7 @@ class ReadmeComponent extends React.Component<Props, State> {
         <MarkdownView
           content={readme.content}
           enableAnchorHeadings={true}
+          permalink={link.href}
           basePath={`/repo/${repository.namespace}/${repository.name}/code/sources/${readme.revision}`}
         />
       </RepositoryRevisionContextProvider>

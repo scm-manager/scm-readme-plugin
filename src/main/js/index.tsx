@@ -22,14 +22,17 @@
  * SOFTWARE.
  */
 import React, { FC } from "react";
-import { Route } from "react-router-dom";
-import { binder } from "@scm-manager/ui-extensions";
-import { Repository } from "@scm-manager/ui-types";
+import { binder, extensionPoints } from "@scm-manager/ui-extensions";
+import { Repository, File } from "@scm-manager/ui-types";
 import ReadmeNavLink from "./ReadmeNavLink";
 import ReadmeComponent from "./ReadmeComponent";
 
-const predicate = (props: any) => {
-  return props.repository && props.repository._links.readme;
+const isReadmeAvailable = ({ repository }: { repository: Repository }) => {
+  return repository._links.readme;
+};
+
+const containsReadme = ({ sources }: { sources: File }) => {
+  return sources._links.readme;
 };
 
 function matches(route: any) {
@@ -41,26 +44,14 @@ const ReadmeNavigationLink: FC<{ url: string }> = ({ url }) => {
   return <ReadmeNavLink url={url} activeWhenMatch={matches} />;
 };
 
-binder.bind("repository.navigation.topLevel", ReadmeNavigationLink, predicate);
+binder.bind<extensionPoints.RepositoryNavigationTopLevel>(
+  "repository.navigation.topLevel",
+  ReadmeNavigationLink,
+  isReadmeAvailable
+);
 
-type Props = {
-  url: string;
-  repository: Repository;
-};
-
-class ReadmeRoute extends React.Component<Props> {
-  renderReadme = () => {
-    const { repository } = this.props;
-    if (repository) {
-      return <ReadmeComponent repository={repository} />;
-    }
-    return "";
-  };
-
-  render() {
-    const { url } = this.props;
-    return <Route path={`${url}/readme`} render={this.renderReadme} />;
-  }
-}
-
-binder.bind("repository.route", ReadmeRoute);
+binder.bind<extensionPoints.RepositoryCodeOverviewContent>(
+  "repository.code.sources.content",
+  ReadmeComponent,
+  containsReadme
+);

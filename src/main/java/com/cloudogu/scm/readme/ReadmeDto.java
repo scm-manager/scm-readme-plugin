@@ -33,10 +33,12 @@ public class ReadmeDto extends HalRepresentation {
 
   private final String revision;
   private final String content;
+  private final String path;
 
   public ReadmeDto(Readme readme, String self) {
     super(Links.linkingTo().self(self).build());
     this.revision = readme.getBranch();
     this.content = readme.getContent();
+    this.path = readme.getPath();
   }
 }

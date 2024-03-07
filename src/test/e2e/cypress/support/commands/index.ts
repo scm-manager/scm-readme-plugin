@@ -21,42 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { Link, File, Repository } from "@scm-manager/ui-types";
-import { ApiResult, apiClient } from "@scm-manager/ui-api";
-import { useQuery, useQueryClient } from "react-query";
 
-export type Readme = {
-  revision: string;
-  content: string;
-  path: string;
-};
-
-export function getReadme(link: string): Promise<Readme> {
-  return apiClient.get(link).then(resp => resp.json());
-}
-
-export function useReadme({ sources, repository }: { sources: File; repository: Repository }): ApiResult<Readme> {
-  const queryClient = useQueryClient();
-  const link = (sources._links.readme as Link).href;
-
-  return useQuery<Readme, Error>(
-    ["repository", repository.name, repository.namespace, "sources", sources.revision, sources.name, sources.path],
-    () => apiClient.get(link).then(resp => resp.json()),
-    {
-      onSuccess: (readme: Readme) => {
-        queryClient.setQueryData(
-          [
-            "repository",
-            repository.name,
-            repository.namespace,
-            "sources",
-            sources.revision,
-            sources.name,
-            sources.path
-          ],
-          readme
-        );
-      }
-    }
-  );
-}
+// This file is a template, please update the contents with commands specific to your plugin.
+// You can leave it blank, but do not add any other files to this directory or any of its subdirectories.

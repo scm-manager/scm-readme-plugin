@@ -21,42 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { Link, File, Repository } from "@scm-manager/ui-types";
-import { ApiResult, apiClient } from "@scm-manager/ui-api";
-import { useQuery, useQueryClient } from "react-query";
 
-export type Readme = {
-  revision: string;
-  content: string;
+import React, { FC } from "react";
+import styled from "styled-components";
+import { Icon } from "@scm-manager/ui-core";
+
+const PathComponent = styled.span`
+  margin-left: 0.25rem;
+`;
+
+type Props = {
   path: string;
 };
 
-export function getReadme(link: string): Promise<Readme> {
-  return apiClient.get(link).then(resp => resp.json());
-}
-
-export function useReadme({ sources, repository }: { sources: File; repository: Repository }): ApiResult<Readme> {
-  const queryClient = useQueryClient();
-  const link = (sources._links.readme as Link).href;
-
-  return useQuery<Readme, Error>(
-    ["repository", repository.name, repository.namespace, "sources", sources.revision, sources.name, sources.path],
-    () => apiClient.get(link).then(resp => resp.json()),
-    {
-      onSuccess: (readme: Readme) => {
-        queryClient.setQueryData(
-          [
-            "repository",
-            repository.name,
-            repository.namespace,
-            "sources",
-            sources.revision,
-            sources.name,
-            sources.path
-          ],
-          readme
-        );
-      }
-    }
+const ReadmeBreadcrumb: FC<Props> = ({ path }) => {
+  const pathComponents = path.split("/");
+  return (
+    <div className="is-flex is-flex-row mx-2 my-4 is-ellipsis-overflow">
+      <Icon>book-reader</Icon>
+      <ul className="is-flex is-flex-row">
+        {pathComponents.map((value, index) => (
+          <li key={`${value}-${index}`}>
+            <PathComponent aria-hidden={true}>/</PathComponent>
+            <PathComponent>{value}</PathComponent>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
-}
+};
+
+export default ReadmeBreadcrumb;

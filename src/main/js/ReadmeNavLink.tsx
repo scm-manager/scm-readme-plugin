@@ -21,30 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import React from "react";
-import { WithTranslation, withTranslation } from "react-i18next";
+import React, { FC } from "react";
+import { useTranslation } from "react-i18next";
 import { SecondaryNavigationItem } from "@scm-manager/ui-components";
 
-type Props = WithTranslation & {
+type Props = {
   url: string;
   activeWhenMatch: (route: any) => boolean;
-  collapsed?: boolean;
 };
 
-class ReadmeNavLink extends React.Component<Props> {
-  render() {
-    const { url, activeWhenMatch, t } = this.props;
+const ReadmeNavLink: FC<Props> = ({ url, activeWhenMatch }) => {
+  const [t] = useTranslation("plugins");
 
-    return (
-      <SecondaryNavigationItem
-        to={`${url}/readme`}
-        icon="fas fa-book-reader"
-        label={t("scm-readme-plugin.navLink")}
-        activeWhenMatch={activeWhenMatch}
-        title={t("scm-readme-plugin.navLink")}
-      />
-    );
-  }
-}
+  return (
+    <SecondaryNavigationItem
+      to={`${url}/code/sources/#readme`}
+      icon="fas fa-book-reader"
+      label={t("scm-readme-plugin.navLink")}
+      activeWhenMatch={activeWhenMatch}
+      title={t("scm-readme-plugin.navLink")}
+    />
+  );
+};
 
-export default withTranslation("plugins")(ReadmeNavLink);
+export default ReadmeNavLink;

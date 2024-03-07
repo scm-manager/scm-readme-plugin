@@ -31,4 +31,10 @@ import lombok.Getter;
 public class Readme {
   private final String branch;
   private final String content;
+  private final String path;
+
+  //This constructor is here to prevent breaking changes, from adding the path property
+  public Readme(String branch, String content) {
+    this(branch, content, null);
+  }
 }

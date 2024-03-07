@@ -1,0 +1,6 @@
+- type: added
+  description: API to fetch the readme file of a certain revision and path
+- type: changed
+  description: README files are now rendered below the code overview in the code section
+- type: fixed
+  description: The permalinks to the titles of a rendered readme are now correct

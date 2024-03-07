@@ -30,17 +30,17 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
 import sonia.scm.api.v2.resources.ErrorDto;
 import sonia.scm.web.VndMediaType;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 
 @OpenAPIDefinition(tags = {
@@ -50,10 +50,8 @@ import java.net.URI;
 @Path(ReadmeResource.PATH)
 public class ReadmeResource {
 
-  static final String MEDIA_TYPE = VndMediaType.PREFIX + "readme" + VndMediaType.SUFFIX;
-
   public static final String PATH = "v2/plugins/readme";
-
+  static final String MEDIA_TYPE = VndMediaType.PREFIX + "readme" + VndMediaType.SUFFIX;
   private final ReadmeManager readmeManager;
 
   @Inject
@@ -85,8 +83,33 @@ public class ReadmeResource {
     )
   )
   public Response get(@Context UriInfo uriInfo, @PathParam("namespace") String namespace, @PathParam("name") String name) {
+    return getReadme(uriInfo, namespace, name, null, null);
+  }
+
+  @GET
+  @Path("/{namespace}/{name}/{revision}")
+  @Produces(MEDIA_TYPE)
+  public Response getByRevision(@Context UriInfo uriInfo,
+                                @PathParam("namespace") String namespace,
+                                @PathParam("name") String name,
+                                @PathParam("revision") String revision) {
+    return getReadme(uriInfo, namespace, name, revision, null);
+  }
+
+  @GET
+  @Path("/{namespace}/{name}/{revision}/{path:.*}")
+  @Produces(MEDIA_TYPE)
+  public Response getByRevisionAndPath(@Context UriInfo uriInfo,
+                                       @PathParam("namespace") String namespace,
+                                       @PathParam("name") String name,
+                                       @PathParam("revision") String revision,
+                                       @PathParam("path") String path) {
+    return getReadme(uriInfo, namespace, name, revision, path);
+  }
+
+  private Response getReadme(UriInfo uriInfo, String namespace, String name, String revision, String path) {
     URI uri = uriInfo.getAbsolutePath();
-    return readmeManager.getReadme(namespace, name)
+    return readmeManager.getReadmeByRevisionAndPath(namespace, name, revision, path)
       .map(readme -> new ReadmeDto(readme, uri.toASCIIString()))
       .map(dto -> Response.ok(dto).build())
       .orElse(Response.status(Response.Status.NOT_FOUND).build());

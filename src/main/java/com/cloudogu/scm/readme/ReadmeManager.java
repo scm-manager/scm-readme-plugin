@@ -24,6 +24,9 @@
 package com.cloudogu.scm.readme;
 
 import com.github.legman.Subscribe;
+import com.google.common.base.Strings;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import sonia.scm.cache.Cache;
@@ -37,34 +40,23 @@ import sonia.scm.repository.RepositoryPermissions;
 import sonia.scm.repository.api.RepositoryService;
 import sonia.scm.repository.api.RepositoryServiceFactory;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Optional.*;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
+import static java.util.Optional.ofNullable;
 
 @Slf4j
 @Singleton
 public class ReadmeManager {
 
+  static final List<String> README_FILES = List.of("readme.md", "readme.txt", "readme", "readme.markdown");
   private static final String CACHE_NAME = "sonia.scm.readme-plugin";
-
-  private static final List<String> README_FILES = Arrays.asList("readme.md", "readme.txt", "readme", "readme.markdown");
-
   private final RepositoryServiceFactory serviceFactory;
   private final RevisionResolver revisionResolver;
   private final Cache<String, CachedResult> cache;
-
-  @EqualsAndHashCode
-  private static class CachedResult {
-    private String path;
-    public CachedResult(String path) {
-      this.path = path;
-    }
-  }
 
   @Inject
   public ReadmeManager(RepositoryServiceFactory serviceFactory, RevisionResolver revisionResolver, CacheManager cacheManager) {
@@ -77,22 +69,38 @@ public class ReadmeManager {
   public void clearCache(PostReceiveRepositoryHookEvent event) {
     String repositoryId = event.getRepository().getId();
     log.debug("clear readme path cache for repository {}", repositoryId);
-    cache.remove(repositoryId);
+    cache.removeAll(key -> key.startsWith(repositoryId));
   }
 
   Optional<Readme> getReadme(String namespace, String name) {
+    return getReadmeByRevisionAndPath(namespace, name, null, null);
+  }
+
+  Optional<Readme> getReadmeByRevisionAndPath(String namespace, String name, String revision, String path) {
     try (RepositoryService repositoryService = serviceFactory.create(new NamespaceAndName(namespace, name))) {
       Repository repository = repositoryService.getRepository();
       RepositoryPermissions.read(repository).check();
-      return getReadmePath(repositoryService)
-        .flatMap(rp -> readFile(repositoryService, rp))
-        .flatMap(content -> revisionResolver.resolve(repositoryService).map(branch -> new Readme(branch, content)));
+
+      Optional<String> revisionOrDefaultBranch = evalRevisionOrDefaultBranch(repositoryService, revision);
+
+      return revisionOrDefaultBranch
+        .flatMap(revOrBranch -> getReadmePathByRevisionAndPath(repositoryService, revOrBranch, path)
+          .flatMap(readmePath -> readFile(repositoryService, revOrBranch, readmePath)
+            .flatMap(content -> Optional.of(new Readme(revOrBranch, content, readmePath)))));
     }
   }
 
-  private Optional<String> readFile(RepositoryService repositoryService, String readmePath) {
+  private Optional<String> evalRevisionOrDefaultBranch(RepositoryService repositoryService, String revision) {
+    if (!Strings.isNullOrEmpty(revision)) {
+      return Optional.of(revision);
+    }
+
+    return revisionResolver.resolve(repositoryService);
+  }
+
+  private Optional<String> readFile(RepositoryService repositoryService, String revision, String readmePath) {
     try {
-      return of(repositoryService.getCatCommand().getContent(readmePath));
+      return of(repositoryService.getCatCommand().setRevision(revision).getContent(readmePath));
     } catch (IOException e) {
       log.error("There is an error while getting the content of the readme file", e);
       return empty();
@@ -100,41 +108,56 @@ public class ReadmeManager {
   }
 
   Optional<String> getReadmePath(RepositoryService repositoryService) {
-    String repositoryId = repositoryService.getRepository().getId();
+    return getReadmePathByRevisionAndPath(repositoryService, null, null);
+  }
 
-    CachedResult cachedResult = cache.get(repositoryId);
+  Optional<String> getReadmePathByRevisionAndPath(RepositoryService repositoryService, String revision, String path) {
+    String validPath = Strings.isNullOrEmpty(path) ? "/" : path;
+    String cacheKey = String.format("%s-%s-%s", repositoryService.getRepository().getId(), revision, validPath);
+
+    CachedResult cachedResult = cache.get(cacheKey);
     if (cachedResult != null) {
       log.trace("return readme path {} from cache", cachedResult.path);
       return Optional.ofNullable(cachedResult.path);
     }
 
-    log.trace("try to find readme for {}", repositoryId);
-    Optional<String> readmePath = findReadmePath(repositoryService);
-    cache.put(repositoryId, new CachedResult(readmePath.orElse(null)));
+    log.trace("try to find readme for {}", cacheKey);
+    Optional<String> readmePath = findReadmePath(repositoryService, revision, validPath);
+    cache.put(cacheKey, new CachedResult(readmePath.orElse(null)));
     return readmePath;
   }
 
-  private Optional<String> findReadmePath(RepositoryService repositoryService) {
-    return browse(repositoryService)
+  private Optional<String> findReadmePath(RepositoryService repositoryService, String revision, String path) {
+    return browse(repositoryService, revision, path)
       .map(BrowserResult::getFile)
       .flatMap(fo -> fo.getChildren()
         .stream()
         .filter(fileObject -> !fileObject.isDirectory())
-        .map(FileObject::getName)
-        .filter(fileName -> README_FILES.contains(fileName.toLowerCase()))
+        .filter(fileObject -> README_FILES.contains(fileObject.getName().toLowerCase()))
+        .map(FileObject::getPath)
         .findFirst());
   }
 
-  private Optional<BrowserResult> browse(RepositoryService repositoryService) {
+  private Optional<BrowserResult> browse(RepositoryService repositoryService, String revision, String path) {
     try {
       return ofNullable(repositoryService.getBrowseCommand()
         .setDisableCache(true)
         .setDisableLastCommit(true)
-        .setPath("/")
+        .setPath(path)
+        .setRevision(revision)
         .getBrowserResult());
     } catch (IOException e) {
       log.error("error on getting browsing repository {}", repositoryService.getRepository().getNamespaceAndName(), e);
       return empty();
+    }
+  }
+
+  @EqualsAndHashCode
+  private static class CachedResult {
+    private final String path;
+
+    public CachedResult(String path) {
+      this.path = path;
     }
   }
 }

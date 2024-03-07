@@ -52,7 +52,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SuppressWarnings("squid:S2068") // this hard coded passwords are ok
 @RunWith(MockitoJUnitRunner.Silent.class)
@@ -98,8 +100,7 @@ public class ReadmeManagerTest {
   public void shouldReturnNullIfThereNoFiles() throws IOException {
     when(serviceFactory.create(any(NamespaceAndName.class))).thenReturn(service);
     createRepository();
-    BrowserResult br = null;
-    when(builder.getBrowserResult()).thenReturn(br);
+    when(builder.getBrowserResult()).thenReturn(null);
 
     Optional<Readme> readme = readmeManager.getReadme(NAMESPACE, NAME);
 
@@ -123,7 +124,11 @@ public class ReadmeManagerTest {
     createReadme(readmeFile);
 
     Optional<Readme> readme = readmeManager.getReadme(NAMESPACE, NAME);
-    assertThat(readme.get().getContent()).contains(CONTENT_OF_THE_README_FILE);
+
+    assertThat(readme.isPresent()).isTrue();
+    assertThat(readme.get().getBranch()).isEqualTo("develop");
+    assertThat(readme.get().getContent()).isEqualTo(CONTENT_OF_THE_README_FILE);
+    assertThat(readme.get().getPath()).isEqualTo("/README");
   }
 
   @Test
@@ -133,7 +138,11 @@ public class ReadmeManagerTest {
     createReadme(readmeFile);
 
     Optional<Readme> readme = readmeManager.getReadme(NAMESPACE, NAME);
-    assertThat(readme.get().getContent()).contains(CONTENT_OF_THE_README_FILE);
+
+    assertThat(readme.isPresent()).isTrue();
+    assertThat(readme.get().getBranch()).isEqualTo("develop");
+    assertThat(readme.get().getContent()).isEqualTo(CONTENT_OF_THE_README_FILE);
+    assertThat(readme.get().getPath()).isEqualTo("/readme.tXt");
   }
 
   @Test
@@ -143,7 +152,11 @@ public class ReadmeManagerTest {
     createReadme(readmeFile);
 
     Optional<Readme> readme = readmeManager.getReadme(NAMESPACE, NAME);
-    assertThat(readme.get().getContent()).contains(CONTENT_OF_THE_README_FILE);
+
+    assertThat(readme.isPresent()).isTrue();
+    assertThat(readme.get().getBranch()).isEqualTo("develop");
+    assertThat(readme.get().getContent()).isEqualTo(CONTENT_OF_THE_README_FILE);
+    assertThat(readme.get().getPath()).isEqualTo("/ReadMe.markdown");
   }
 
   @Test
@@ -153,7 +166,11 @@ public class ReadmeManagerTest {
     createReadme(readmeFile);
 
     Optional<Readme> readme = readmeManager.getReadme(NAMESPACE, NAME);
-    assertThat(readme.get().getContent()).contains(CONTENT_OF_THE_README_FILE);
+
+    assertThat(readme.isPresent()).isTrue();
+    assertThat(readme.get().getBranch()).isEqualTo("develop");
+    assertThat(readme.get().getContent()).isEqualTo(CONTENT_OF_THE_README_FILE);
+    assertThat(readme.get().getPath()).isEqualTo("/ReadMe.md");
   }
 
   @Test
@@ -185,12 +202,12 @@ public class ReadmeManagerTest {
     createReadme(README_TXT);
 
     Optional<String> readmePath = readmeManager.getReadmePath(service);
-    assertThat(readmePath).contains(README_TXT);
+    assertThat(readmePath).contains("/" + README_TXT);
 
     createReadme(README_MD);
 
     readmePath = readmeManager.getReadmePath(service);
-    assertThat(readmePath).contains(README_TXT);
+    assertThat(readmePath).contains("/" + README_TXT);
   }
 
   @Test
@@ -199,13 +216,41 @@ public class ReadmeManagerTest {
     createReadme(README_TXT);
 
     Optional<String> readmePath = readmeManager.getReadmePath(service);
-    assertThat(readmePath).contains(README_TXT);
+    assertThat(readmePath).contains("/" + README_TXT);
 
     readmeManager.clearCache(createHookEvent(service.getRepository()));
     createReadme(README_MD);
 
     readmePath = readmeManager.getReadmePath(service);
-    assertThat(readmePath).contains(README_MD);
+    assertThat(readmePath).contains("/" + README_MD);
+  }
+
+  @Test
+  @SubjectAware(username = "trillian", password = "secret")
+  public void shouldReturnReadmeForSubdir() throws IOException {
+    when(serviceFactory.create(any(NamespaceAndName.class))).thenReturn(service);
+    createRepository();
+
+    FileObject secondDir = new FileObject();
+    secondDir.setName("second");
+    secondDir.setPath("/first/second");
+    secondDir.setDirectory(true);
+
+    FileObject readmeFile = new FileObject();
+    readmeFile.setName("readme.md");
+    readmeFile.setPath("/first/second/readme.md");
+
+    secondDir.setChildren(List.of(readmeFile));
+
+    BrowserResult br = new BrowserResult("develop", secondDir);
+    when(builder.getBrowserResult()).thenReturn(br);
+    when(catCommand.getContent(readmeFile.getPath())).thenReturn(CONTENT_OF_THE_README_FILE);
+
+    Optional<Readme> readme = readmeManager.getReadmeByRevisionAndPath(NAMESPACE, NAME, "develop", "first/second");
+    assertThat(readme).isPresent();
+    assertThat(readme.get().getBranch()).isEqualTo("develop");
+    assertThat(readme.get().getContent()).isEqualTo(CONTENT_OF_THE_README_FILE);
+    assertThat(readme.get().getPath()).isEqualTo("/first/second/readme.md");
   }
 
   private PostReceiveRepositoryHookEvent createHookEvent(Repository repository) {
@@ -222,11 +267,12 @@ public class ReadmeManagerTest {
     file.setDirectory(true);
     FileObject childFile = new FileObject();
     childFile.setName(name);
+    childFile.setPath("/" + name);
     List<FileObject> children = Lists.newArrayList(childFile);
     file.setChildren(children);
     BrowserResult br = new BrowserResult("rev", file);
     when(builder.getBrowserResult()).thenReturn(br);
-    when(catCommand.getContent(name)).thenReturn(CONTENT_OF_THE_README_FILE);
+    when(catCommand.getContent("/" + name)).thenReturn(CONTENT_OF_THE_README_FILE);
     return childFile;
   }
 

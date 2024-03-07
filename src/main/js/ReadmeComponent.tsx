@@ -21,72 +21,49 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import React from "react";
-import { WithTranslation, withTranslation } from "react-i18next";
-import { Repository, Link } from "@scm-manager/ui-types";
-import { MarkdownView, Loading, ErrorNotification } from "@scm-manager/ui-components";
-import { getReadme, Readme } from "./api";
+import React, { FC } from "react";
+import { File, Repository } from "@scm-manager/ui-types";
+import { ErrorNotification, Loading } from "@scm-manager/ui-core";
+import { MarkdownView } from "@scm-manager/ui-components";
 import { RepositoryRevisionContextProvider } from "@scm-manager/ui-api";
+import { useReadme } from "./api";
+import ReadmeBreadcrumb from "./ReadmeBreadcrumb";
 
-type Props = WithTranslation & {
+type Props = {
+  sources: File;
   repository: Repository;
 };
 
-type State = {
-  readme?: Readme;
-  loading?: boolean;
-  error?: Error;
+const ReadmeComponent: FC<Props> = ({ sources, repository }) => {
+  const { isLoading, error, data: readme } = useReadme({ sources, repository });
+
+  if (error) {
+    return <ErrorNotification error={error} />;
+  }
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (!readme) {
+    return null;
+  }
+
+  return (
+    <div className="panel" id="readme">
+      <ReadmeBreadcrumb path={readme.path} />
+      <hr className="m-0" />
+      <div className="panel-block">
+        <RepositoryRevisionContextProvider revision={readme.revision}>
+          <MarkdownView
+            content={readme.content}
+            enableAnchorHeadings={true}
+            permalink={`/repo/${repository.namespace}/${repository.name}/code/sources/${sources.revision}/${sources.path}`}
+          />
+        </RepositoryRevisionContextProvider>
+      </div>
+    </div>
+  );
 };
 
-class ReadmeComponent extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      loading: true
-    };
-  }
-
-  componentDidMount() {
-    const { repository } = this.props;
-    if (repository._links.readme) {
-      const link = repository._links.readme as Link;
-      getReadme(link.href)
-        .then(readme => {
-          this.setState({
-            loading: false,
-            readme
-          });
-        })
-        .catch(error => {
-          this.setState({
-            loading: false,
-            error
-          });
-        });
-    }
-  }
-  render() {
-    const { repository } = this.props;
-    const { loading, error, readme } = this.state;
-    const link = repository._links.readme as Link;
-    if (error) {
-      return <ErrorNotification error={error} />;
-    }
-    if (loading || !readme) {
-      return <Loading />;
-    }
-
-    return (
-      <RepositoryRevisionContextProvider revision={readme.revision}>
-        <MarkdownView
-          content={readme.content}
-          enableAnchorHeadings={true}
-          permalink={link.href}
-          basePath={`/repo/${repository.namespace}/${repository.name}/code/sources/${readme.revision}`}
-        />
-      </RepositoryRevisionContextProvider>
-    );
-  }
-}
-
-export default withTranslation("plugin")(ReadmeComponent);
+export default ReadmeComponent;

@@ -30,7 +30,7 @@ dependencies {
 }
 
 scmPlugin {
-  scmVersion = "3.0.4-SNAPSHOT"
+  scmVersion = "3.0.5-SNAPSHOT"
   displayName = "Readme"
   description = "Shows the Readme content of a repository"
   author = "Cloudogu GmbH"

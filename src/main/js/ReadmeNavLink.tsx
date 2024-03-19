@@ -27,18 +27,20 @@ import { SecondaryNavigationItem } from "@scm-manager/ui-components";
 
 type Props = {
   url: string;
-  activeWhenMatch: (route: any) => boolean;
 };
 
-const ReadmeNavLink: FC<Props> = ({ url, activeWhenMatch }) => {
+const ReadmeNavLink: FC<Props> = ({ url }) => {
   const [t] = useTranslation("plugins");
+
+  if (window.location.href.includes(`${url}/readme`)) {
+    window.location.replace(window.location.href.replace("/readme", "/code/sources/#readme"));
+  }
 
   return (
     <SecondaryNavigationItem
       to={`${url}/code/sources/#readme`}
       icon="fas fa-book-reader"
       label={t("scm-readme-plugin.navLink")}
-      activeWhenMatch={activeWhenMatch}
       title={t("scm-readme-plugin.navLink")}
     />
   );

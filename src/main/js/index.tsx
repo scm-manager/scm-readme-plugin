@@ -35,13 +35,8 @@ const containsReadme = ({ sources }: { sources: File }) => {
   return sources._links.readme;
 };
 
-function matches(route: any) {
-  const regex = new RegExp(".*(/readme)$");
-  return !!route.location.pathname.match(regex);
-}
-
 const ReadmeNavigationLink: FC<{ url: string }> = ({ url }) => {
-  return <ReadmeNavLink url={url} activeWhenMatch={matches} />;
+  return <ReadmeNavLink url={url} />;
 };
 
 binder.bind<extensionPoints.RepositoryNavigationTopLevel>(
@@ -51,7 +46,7 @@ binder.bind<extensionPoints.RepositoryNavigationTopLevel>(
 );
 
 binder.bind<extensionPoints.RepositoryCodeOverviewContent>(
-  "repository.code.sources.content",
+  "repository.code.overview.content",
   ReadmeComponent,
   containsReadme
 );

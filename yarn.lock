@@ -2673,12 +2673,12 @@
   dependencies:
     typescript "^4.6.0"
 
-"@scm-manager/ui-api@3.0.4-20240126-080847":
-  version "3.0.4-20240126-080847"
-  resolved "https://registry.yarnpkg.com/@scm-manager/ui-api/-/ui-api-3.0.4-20240126-080847.tgz#876d3df44b81e4263997cb51fa62561dacee010d"
-  integrity sha512-D6ydP6hqsVGQYlN+q0MBWiTI6LVONeFVwEcOZVLhJxJUbWoXHB94Ffq1UOESbLHuHHheOYfbCPpOf+kV3/jZzg==
+"@scm-manager/ui-api@3.0.5-20240218-191316":
+  version "3.0.5-20240218-191316"
+  resolved "https://registry.yarnpkg.com/@scm-manager/ui-api/-/ui-api-3.0.5-20240218-191316.tgz#c0b29d7c8eddc6a4934faa75c6f76a20e6a350b7"
+  integrity sha512-Qs5ntUuTkSrO4f+1Gl+bnlpsFiFzUZjNWMkyJV5y4B453j9Bo64yMQOPTsHbQauGzcpSlkuWDLtM/Qh1cT6TsQ==
   dependencies:
-    "@scm-manager/ui-types" "3.0.4-20240126-080847"
+    "@scm-manager/ui-types" "3.0.5-20240218-191316"
     fetch-mock-jest "^1.5.1"
     gitdiff-parser "^0.2.2"
     query-string "6.14.1"
@@ -2687,20 +2687,20 @@
     react-query "^3.25.1"
     react-router-dom "^5.3.1"
 
-"@scm-manager/ui-buttons@3.0.4-20240126-080847":
-  version "3.0.4-20240126-080847"
-  resolved "https://registry.yarnpkg.com/@scm-manager/ui-buttons/-/ui-buttons-3.0.4-20240126-080847.tgz#88bf8f73c1879de7ad5ffbd892b7f3234a975379"
-  integrity sha512-ztawGpGBehsSO8LbzeivgXUGGXnWi+W7M3G7eIYf4eakHPvRKAmQyTC1ESVZCmZiKZtErqGIKDRluqJ8tfUwhA==
+"@scm-manager/ui-buttons@3.0.5-20240218-191316":
+  version "3.0.5-20240218-191316"
+  resolved "https://registry.yarnpkg.com/@scm-manager/ui-buttons/-/ui-buttons-3.0.5-20240218-191316.tgz#b49b8f9cb7db7f0cb61981fb33b5ddd35b39f867"
+  integrity sha512-LxXlYYBnhIGqw3iEhEBmzOGrYD69q3io3a5xWDeSigTEJ9v1a10Dy8QIy7DDrCvWpsBiqKHL5xoaJnP+yebQOg==
 
-"@scm-manager/ui-components@3.0.4-20240126-080847":
-  version "3.0.4-20240126-080847"
-  resolved "https://registry.yarnpkg.com/@scm-manager/ui-components/-/ui-components-3.0.4-20240126-080847.tgz#561a125ae5544ad62c1340e15918a1085f91b967"
-  integrity sha512-Y6srCbJJ0Hzjij/jolcimcTgzssosxxHDsQgcZ8sX5fZ4guodl9M/jWZmZXWmm5dlaPh1bgWus/D0m4HYQaItA==
+"@scm-manager/ui-components@3.0.5-20240218-191316":
+  version "3.0.5-20240218-191316"
+  resolved "https://registry.yarnpkg.com/@scm-manager/ui-components/-/ui-components-3.0.5-20240218-191316.tgz#3f86c003a21197b4fbc1386062b9b596af59d4bd"
+  integrity sha512-xQZCepzBTRAWJ6nviamlugOJ1SAOQmyvAnry7yXqKPVV1I8L7ccXPADPSsQh3uVyUtjnfKjL2eV9U/tvZKiCZA==
   dependencies:
     "@headlessui/react" "^1.4.3"
-    "@scm-manager/ui-api" "3.0.4-20240126-080847"
-    "@scm-manager/ui-extensions" "3.0.4-20240126-080847"
-    "@scm-manager/ui-types" "3.0.4-20240126-080847"
+    "@scm-manager/ui-api" "3.0.5-20240218-191316"
+    "@scm-manager/ui-extensions" "3.0.5-20240218-191316"
+    "@scm-manager/ui-types" "3.0.5-20240218-191316"
     classnames "^2.2.6"
     date-fns "^2.4.1"
     deepmerge "^4.2.2"
@@ -2741,41 +2741,41 @@
     "@radix-ui/react-visually-hidden" "^1.0.3"
     mousetrap "1.6.5"
 
-"@scm-manager/ui-extensions@3.0.4-20240126-080847":
-  version "3.0.4-20240126-080847"
-  resolved "https://registry.yarnpkg.com/@scm-manager/ui-extensions/-/ui-extensions-3.0.4-20240126-080847.tgz#25778a55d34783b9ec24ae913727a2437eb4233c"
-  integrity sha512-JHtPpCag/As2h6D/x0j+sgy21P8DGBD9hbq2gomMNBnqaeaNWkuC5/rhradW3pCYMrKMksazBHOcvQTq2NhE/g==
+"@scm-manager/ui-extensions@3.0.5-20240218-191316":
+  version "3.0.5-20240218-191316"
+  resolved "https://registry.yarnpkg.com/@scm-manager/ui-extensions/-/ui-extensions-3.0.5-20240218-191316.tgz#49e1dd06d78dc11d8a3559dc3222be6ff85e15dd"
+  integrity sha512-bocii14owkfNbGzqTVlcbRce5jf+QXAXQ6/8IUPidhluBIzgYh07zJ+svJLAogaWOR4nu1favX5ZAHx+YGWRwg==
   dependencies:
-    "@scm-manager/ui-types" "3.0.4-20240126-080847"
+    "@scm-manager/ui-types" "3.0.5-20240218-191316"
     react "^17.0.1"
 
-"@scm-manager/ui-forms@3.0.4-20240126-080847":
-  version "3.0.4-20240126-080847"
-  resolved "https://registry.yarnpkg.com/@scm-manager/ui-forms/-/ui-forms-3.0.4-20240126-080847.tgz#74f3bdd507f2f8a49ec2de16d91509ac296bcbc9"
-  integrity sha512-LltCPMqH48aYNcrmPP506fHiSsQvwYpuwKLy5oZFsh8+qv7fjaui76tCLhcFx7edJkpoQzyxkIbY6CF7nRw0gg==
+"@scm-manager/ui-forms@3.0.5-20240218-191316":
+  version "3.0.5-20240218-191316"
+  resolved "https://registry.yarnpkg.com/@scm-manager/ui-forms/-/ui-forms-3.0.5-20240218-191316.tgz#9b49bbfc5fb9f9df26ad137184ce08c699879e6f"
+  integrity sha512-7CD+8FXLs4iwv+38pkE49X7z2Bv+GwF0inKksNxnf1nH5eyyRW5mJ4mFEJPhhatSr0c5/35TLTCac2/KmjNkvg==
 
-"@scm-manager/ui-layout@3.0.4-20240126-080847":
-  version "3.0.4-20240126-080847"
-  resolved "https://registry.yarnpkg.com/@scm-manager/ui-layout/-/ui-layout-3.0.4-20240126-080847.tgz#03e10bb6f08d625cc310bda35de5931da03718d6"
-  integrity sha512-8x4wvrq9EYDjGEVDtjB/uSpsTzcZx5dgJmIb9M0KppWNr+ONA8E+sNM/fcuIbBnFmIdNCWQue2yKfvCf65hTzw==
+"@scm-manager/ui-layout@3.0.5-20240218-191316":
+  version "3.0.5-20240218-191316"
+  resolved "https://registry.yarnpkg.com/@scm-manager/ui-layout/-/ui-layout-3.0.5-20240218-191316.tgz#5d2af61acb591e79047c96d52ecad4949cf2afed"
+  integrity sha512-mzdA/GDikeCAbf+3JGhxC8uWTT63WsRkONWYt7XRXCygnKt+icyNgd2xU1GjeQjn4y1nL1jpPFH0AbQDVw/wfQ==
 
-"@scm-manager/ui-overlays@3.0.4-20240126-080847":
-  version "3.0.4-20240126-080847"
-  resolved "https://registry.yarnpkg.com/@scm-manager/ui-overlays/-/ui-overlays-3.0.4-20240126-080847.tgz#df8956fdc5bae508744fc7defc1c504ba613b22b"
-  integrity sha512-IC+WZW9ZsusoH73ava3JBIdGpsz4dNQxt5h+xQtSqWKAiejkWrFk4iObFXqxzNxT7H43nKXrEeAasIV1bKHxyg==
+"@scm-manager/ui-overlays@3.0.5-20240218-191316":
+  version "3.0.5-20240218-191316"
+  resolved "https://registry.yarnpkg.com/@scm-manager/ui-overlays/-/ui-overlays-3.0.5-20240218-191316.tgz#cc239609626f0b52e9065fa17a989ac0dfb14d93"
+  integrity sha512-OThMLkRgqRt7CcFOtRCrF9LShs2TO4kRxdIO5z8wh12q7y/hiDcz3Mi2V60WiDPhA1V8/Kl19RYapqM9pGQ9ZA==
 
-"@scm-manager/ui-plugins@3.0.4-20240126-080847":
-  version "3.0.4-20240126-080847"
-  resolved "https://registry.yarnpkg.com/@scm-manager/ui-plugins/-/ui-plugins-3.0.4-20240126-080847.tgz#c001e873efa418746305f62ea171df196e886251"
-  integrity sha512-8ZBXponnsDjlxfOHZ3DPKPqVAhN4HF4Omlgun5o4r0x9Mq09LbEesx4NIYmv0YsULOCwv8eHe5ldJbdYs7GZoQ==
+"@scm-manager/ui-plugins@3.0.5-20240218-191316":
+  version "3.0.5-20240218-191316"
+  resolved "https://registry.yarnpkg.com/@scm-manager/ui-plugins/-/ui-plugins-3.0.5-20240218-191316.tgz#9ff96bd68ee5f828619a2d0bb779f1b4260207aa"
+  integrity sha512-Ol/HKMzY3ejxaNhd70KM2t4WbHnMXYftOejguBqf1xO0YwaVA+zS64HU4bnyA40TmTsD/W+3/fWQ+p/F6E1xnA==
   dependencies:
-    "@scm-manager/ui-api" "3.0.4-20240126-080847"
-    "@scm-manager/ui-buttons" "3.0.4-20240126-080847"
-    "@scm-manager/ui-components" "3.0.4-20240126-080847"
-    "@scm-manager/ui-extensions" "3.0.4-20240126-080847"
-    "@scm-manager/ui-forms" "3.0.4-20240126-080847"
-    "@scm-manager/ui-layout" "3.0.4-20240126-080847"
-    "@scm-manager/ui-overlays" "3.0.4-20240126-080847"
+    "@scm-manager/ui-api" "3.0.5-20240218-191316"
+    "@scm-manager/ui-buttons" "3.0.5-20240218-191316"
+    "@scm-manager/ui-components" "3.0.5-20240218-191316"
+    "@scm-manager/ui-extensions" "3.0.5-20240218-191316"
+    "@scm-manager/ui-forms" "3.0.5-20240218-191316"
+    "@scm-manager/ui-layout" "3.0.5-20240218-191316"
+    "@scm-manager/ui-overlays" "3.0.5-20240218-191316"
     classnames "^2.2.6"
     query-string "6.14.1"
     react "17"
@@ -2813,10 +2813,10 @@
     webpack-cli "^4.9.1"
     webpack-dev-server "^4.4.0"
 
-"@scm-manager/ui-tests@3.0.4-20240126-080847":
-  version "3.0.4-20240126-080847"
-  resolved "https://registry.yarnpkg.com/@scm-manager/ui-tests/-/ui-tests-3.0.4-20240126-080847.tgz#d236deefbdc5cf562a7848e9f6bd696acf6eec5c"
-  integrity sha512-Xgd9oGKkm67H4z0dXZHamQnQDQCYoF8lORWNgXqrRn0Ee7z5+6hYWt8nzAEePSS+W/etLAPTOE10nktqQqvcVA==
+"@scm-manager/ui-tests@3.0.5-20240218-191316":
+  version "3.0.5-20240218-191316"
+  resolved "https://registry.yarnpkg.com/@scm-manager/ui-tests/-/ui-tests-3.0.5-20240218-191316.tgz#a5025856a2959595aa72774b1f843d6452e8b91c"
+  integrity sha512-9VNMXbkIk5n3e0enfXAsOaXVBZvl5TXILEMmNKIzOySt/NiZTUtMK5n+7Ufi6Qldat5r0Iycjol18qSke98Nag==
   dependencies:
     "@wojtekmaj/enzyme-adapter-react-17" "^0.7.0"
     babel-plugin-istanbul "^6.0.0"
@@ -2827,10 +2827,10 @@
     raf "^3.4.1"
     react-test-renderer "^17.0.1"
 
-"@scm-manager/ui-types@3.0.4-20240126-080847":
-  version "3.0.4-20240126-080847"
-  resolved "https://registry.yarnpkg.com/@scm-manager/ui-types/-/ui-types-3.0.4-20240126-080847.tgz#b8b55d01a8b50f08fbb5a1beeb2337d17159fe3b"
-  integrity sha512-SpNtbldK7ZGMVhVtIHJwyl+N/oZINWRlNaNDZfOUavQLW8fBhosAsfIzfVlqTvuEcTHeIJVOSgAoOATkUfJAig==
+"@scm-manager/ui-types@3.0.5-20240218-191316":
+  version "3.0.5-20240218-191316"
+  resolved "https://registry.yarnpkg.com/@scm-manager/ui-types/-/ui-types-3.0.5-20240218-191316.tgz#32824ff9c7bbea1a070002efcce46bcd1bb4e276"
+  integrity sha512-oQXgiafFeyusJi+lcXsp4P1DaJqI4utVU1L0ydiBTZOJLLl+H45c1+cOSN4nnXgIJLkB+buxMva3s8ir3gvOoQ==
 
 "@sinonjs/commons@^1.7.0":
   version "1.8.6"

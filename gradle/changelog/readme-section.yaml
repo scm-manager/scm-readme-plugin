@@ -4,3 +4,5 @@
   description: README files are now rendered below the code overview in the code section
 - type: fixed
   description: The permalinks to the titles of a rendered readme are now correct
+- type: fixed
+  description: The link to the readme of a repository is now a redirect to the code overview with an anchor tag

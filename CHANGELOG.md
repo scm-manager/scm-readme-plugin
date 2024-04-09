@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2.3.0 - 2024-04-09
+### Added
+- API to fetch the readme file of a certain revision and path
+
+### Fixed
+- The permalinks to the titles of a rendered readme are now correct
+- The link to the readme of a repository is now a redirect to the code overview with an anchor tag
+
+### Changed
+- README files are now rendered below the code overview in the code section
+
 ## 2.2.0 - 2024-01-17
 ### Changed
 - In the readme view its now possible to click on and save permalinks

@@ -56,6 +56,7 @@ const ReadmeComponent: FC<Props> = ({ sources, repository }) => {
       <div className="panel-block">
         <RepositoryRevisionContextProvider revision={readme.revision}>
           <MarkdownView
+            basePath={`/repo/${repository.namespace}/${repository.name}/code/sources/${sources.revision}/${sources.path}`}
             content={readme.content}
             enableAnchorHeadings={true}
             permalink={`/repo/${repository.namespace}/${repository.name}/code/sources/${sources.revision}/${sources.path}`}

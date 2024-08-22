@@ -1,0 +1,2 @@
+- type: fixed
+  description: Relative path in the readme view is now pointing to the correct urls

@@ -18,7 +18,7 @@ import React, { FC } from "react";
 import { File, Repository } from "@scm-manager/ui-types";
 import { ErrorNotification, Loading } from "@scm-manager/ui-core";
 import { MarkdownView } from "@scm-manager/ui-components";
-import { RepositoryRevisionContextProvider } from "@scm-manager/ui-api";
+import { RepositoryRevisionContextProvider, useRepositoryRevisionContext } from "@scm-manager/ui-api";
 import { useReadme } from "./api";
 import ReadmeBreadcrumb from "./ReadmeBreadcrumb";
 
@@ -29,6 +29,7 @@ type Props = {
 
 const ReadmeComponent: FC<Props> = ({ sources, repository }) => {
   const { isLoading, error, data: readme } = useReadme({ sources, repository });
+  let revision = useRepositoryRevisionContext()
 
   if (error) {
     return <ErrorNotification error={error} />;
@@ -42,17 +43,21 @@ const ReadmeComponent: FC<Props> = ({ sources, repository }) => {
     return null;
   }
 
+  if (!revision) {
+    revision = readme.revision
+  }
+
   return (
     <div className="panel" id="readme">
       <ReadmeBreadcrumb path={readme.path} />
       <hr className="m-0" />
       <div className="panel-block">
-        <RepositoryRevisionContextProvider revision={readme.revision}>
+        <RepositoryRevisionContextProvider revision={revision}>
           <MarkdownView
-            basePath={`/repo/${repository.namespace}/${repository.name}/code/sources/${sources.revision}/${sources.path}`}
+            basePath={`/repo/${repository.namespace}/${repository.name}/code/sources/${revision}/${sources.path}`}
             content={readme.content}
             enableAnchorHeadings={true}
-            permalink={`/repo/${repository.namespace}/${repository.name}/code/sources/${sources.revision}/${sources.path}`}
+            permalink={`/repo/${repository.namespace}/${repository.name}/code/sources/${revision}/${sources.path}`}
           />
         </RepositoryRevisionContextProvider>
       </div>

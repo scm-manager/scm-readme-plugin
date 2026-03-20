@@ -29,7 +29,7 @@ type Props = {
 
 const ReadmeComponent: FC<Props> = ({ sources, repository }) => {
   const { isLoading, error, data: readme } = useReadme({ sources, repository });
-  let revision = useRepositoryRevisionContext()
+  let revision = useRepositoryRevisionContext();
 
   if (error) {
     return <ErrorNotification error={error} />;
@@ -44,7 +44,7 @@ const ReadmeComponent: FC<Props> = ({ sources, repository }) => {
   }
 
   if (!revision) {
-    revision = readme.revision
+    revision = readme.revision;
   }
 
   return (
@@ -54,10 +54,10 @@ const ReadmeComponent: FC<Props> = ({ sources, repository }) => {
       <div className="panel-block">
         <RepositoryRevisionContextProvider revision={revision}>
           <MarkdownView
-            basePath={`/repo/${repository.namespace}/${repository.name}/code/sources/${revision}/${sources.path}`}
+            basePath={`/repo/${repository.namespace}/${repository.name}/code/sources/${revision}/`}
             content={readme.content}
             enableAnchorHeadings={true}
-            permalink={`/repo/${repository.namespace}/${repository.name}/code/sources/${revision}/${sources.path}`}
+            permalink={`/repo/${repository.namespace}/${repository.name}/code/sources/${revision}/${sources.path}/README.md/`}
           />
         </RepositoryRevisionContextProvider>
       </div>
